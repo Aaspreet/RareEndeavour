@@ -22,6 +22,7 @@ const Layout = () => {
         screenOptions={(props) => ({ header: () => <Header {...props} /> })}
         initialRouteName="index"
         tabBar={(props) => <TabBar {...props} />}
+      
       >
         <Tabs.Screen name="index" />
         <Tabs.Screen name="grid" />

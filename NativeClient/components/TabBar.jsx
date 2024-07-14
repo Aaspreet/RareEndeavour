@@ -1,55 +1,75 @@
 import { View, Text, TouchableOpacity, Pressable } from "react-native";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { BlurView } from "expo-blur";
 import { useContext } from "react";
 import { HomeFeedContext } from "./contexts/HomeFeedContext";
 import Animated, { useAnimatedProps, useSharedValue, withTiming } from "react-native-reanimated";
 import { FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
-import { router } from "expo-router";
+import { Link, router, useLocalSearchParams, useNavigation } from "expo-router";
 
-const TabBar = ({ state, descriptors, navigation, ...rest }) => {
+const TabBar = ({ state, ...rest }) => {
+  const navigation = useNavigation();
   const { scrollingDown } = useContext(HomeFeedContext);
   const blurViewIntensity = useSharedValue(0);
-  const isHomeScreen = state.routes[state.index].name === "index";
 
+  const [allowAnimatedTabBar, setAllowAnimatedTabBar] = useState(false);
   const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 
-  const modifiedRoutess = state.routes.map((route, index) => ({ ...route, index }));
-  modifiedRoutess.splice(2, 0, { name: "create", key: "create" });
-
-  console.log(modifiedRoutess);
-  const navigationBarIcons = [
+  const routesConfig = [
     {
       iconType: "Ionicons",
       iconOutline: "home-outline",
       iconFilled: "home",
-      route: "index",
+      name: "index",
+      path: "/",
     },
     {
       iconType: "Ionicons",
       iconOutline: "grid-outline",
       iconFilled: "grid",
-      route: "grid",
+      name: "grid",
     },
     {
       iconType: "Ionicons",
       iconOutline: "add",
       iconFilled: "add",
-      route: "create",
+      name: "create",
     },
     {
       iconType: "Ionicons",
       iconOutline: "chatbox-outline",
       iconFilled: "chatbox",
-      route: "chat",
+      name: "chat",
     },
     {
       iconType: "Ionicons",
       iconOutline: "notifications-outline",
       iconFilled: "notifications",
-      route: "inbox",
+      name: "inbox",
     },
   ];
+
+  const routesProperties = state.routes.map((route, index) => {
+    const { iconOutline, iconFilled, path } = routesConfig.find((icon) => icon.name === route.name);
+    return {
+      name: route.name,
+      path: path || route.name,
+      index: index,
+      iconOutline,
+      iconFilled,
+    };
+  });
+  routesProperties.splice(2, 0, {
+    name: "create",
+    path: "create",
+    index: null,
+    iconOutline: routesConfig.find((icon) => icon.name === "create").iconOutline,
+    iconFilled: routesConfig.find((icon) => icon.name === "create").iconFilled,
+  });
+
+  useEffect(() => {
+    setAllowAnimatedTabBar(state.routes[state.index].name === "index");
+  }, [state]);
 
   useEffect(() => {
     if (scrollingDown) {
@@ -62,73 +82,28 @@ const TabBar = ({ state, descriptors, navigation, ...rest }) => {
   return (
     <AnimatedBlurView
       className="bottom-0 flex-row justify-between border-t border-zinc-400"
-      intensity={isHomeScreen ? blurViewIntensity : 0}
+      intensity={allowAnimatedTabBar ? blurViewIntensity : 0}
       tint="dark"
       style={{
         paddingBottom: rest.insets.bottom,
         paddingTop: 5,
-        backgroundColor: isHomeScreen ? "rgba(0, 0, 0, 0.7)" : "rgb(0, 0, 0)",
-        position: isHomeScreen && "absolute",
+        backgroundColor: allowAnimatedTabBar ? "rgba(0, 0, 0, 0.7)" : "rgb(0, 0, 0)",
+        position: allowAnimatedTabBar && "absolute",
       }}
     >
-      {modifiedRoutess.map((route, index) => {
-        const { options } = descriptors[route.key] || {};
+      {routesProperties.map((route, index) => {
+        const isFocused = state.index === route.index && route.index !== null;
 
-        // const label =
-        //   options.tabBarLabel !== undefined
-        //     ? options.tabBarLabel
-        //     : options.title !== undefined
-        //     ? options.title
-        //     : route.name;
-
-        const isFocused = state.index === route.index;
-
-        const onPress = () => {
-          if (route.name === "create") {
-            router.push("create");
-            return;
-          }
-
-          const event = navigation.emit({
-            type: "tabPress",
-            target: route.key,
-            canPreventDefault: true,
-          });
-
-          if (!isFocused && !event.defaultPrevented) {
-            navigation.navigate(route.name);
-          }
-        };
-
-        const onLongPress = () => {
-          navigation.emit({
-            type: "tabLongPress",
-            target: route.key,
-          });
-        };
-
-        const icon = navigationBarIcons.find((icon) => icon.route === route.name);
-        if (!icon) return null;
-        const IconComponent = icon.iconType === "MaterialCommunityIcons" ? MaterialCommunityIcons : Ionicons;
         return (
-          <Pressable
-            key={route.key}
-            accessibilityRole="button"
-            accessibilityState={isFocused ? { selected: true } : {}}
-            accessibilityLabel={options?.tabBarAccessibilityLabel || route.name}
-            testID={options?.tabBarTestID || route.name}
-            onPress={onPress}
-            onLongPress={onLongPress}
-            className="flex-1 items-center"
-          >
-            <View className="py-2">
-              <IconComponent
-                name={isFocused ? icon.iconFilled : icon.iconOutline}
-                color={isFocused ? "rgb(255, 255, 255)" : "rgb(255, 255, 255)"}
-                size={isFocused ? 25 : 23}
-              />
-            </View>
-          </Pressable>
+          <Link key={route.name} href={route.path} className="flex-1 py-[12px] items-center" asChild>
+            <Pressable>
+                <Ionicons
+                  name={isFocused ? route.iconFilled : route.iconOutline}
+                  color={isFocused ? "rgb(255, 255, 255)" : "rgb(255, 255, 255)"}
+                  size={isFocused ? 25 : 23}
+                />
+            </Pressable>
+          </Link>
         );
       })}
     </AnimatedBlurView>

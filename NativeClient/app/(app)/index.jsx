@@ -4,6 +4,7 @@ import { Link, Redirect, router, useLocalSearchParams, useRootNavigationState } 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { HomeFeedContext } from "../../components/contexts/HomeFeedContext";
+import { RichEditor } from "react-native-pell-rich-editor";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -16,9 +17,9 @@ const Home = () => {
     const direction = currentOffset > previousScrollOffset.current ? "down" : "up";
 
     const isAtTop = currentOffset <= 20;
-    const isAtBottom = e.nativeEvent.contentSize.height <= e.nativeEvent.layoutMeasurement.height + currentOffset+100;
+    const isAtBottom = e.nativeEvent.contentSize.height <= e.nativeEvent.layoutMeasurement.height + currentOffset + 100;
     if (isAtTop || isAtBottom) return setScrollingDown(false);
-    
+
     if (Math.abs(currentOffset - previousScrollOffset.current) < 10) return;
 
     if (direction === "down" && !scrollingDown) {
@@ -41,6 +42,7 @@ const Home = () => {
 
   return (
     <SafeAreaView className="" style={{ backgroundColor: "rgb(20, 20, 20)" }} edges={["left", "right", "bottom"]}>
+      <Text className="text-white">abc</Text>
       <FlatList
         data={posts}
         renderItem={({ item }) => (
