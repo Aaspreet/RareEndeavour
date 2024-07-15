@@ -32,18 +32,16 @@ const Layout = () => {
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
         <SafeAreaProvider>
-          <Stack>
+          <Stack initialRouteName="(app)">
             <Stack.Screen name="(app)" options={{ headerShown: false }} />
-            <Stack.Screen name="login" options={{ presentation: "modal" }} />
-            <Stack.Screen name="register" options={{ presentation: "modal" }} />
+            <Stack.Screen name="(auth)" options={{ presentation: "modal" }} />
             <Stack.Screen
-              name="create"
+              name="(modals)"
               options={{
                 presentation: "modal",
                 animation: "default",
-                headerStyle: { backgroundColor: "black" },
-                headerTitleStyle: { color: "white", fontWeight: "bold", fontSize: 22 },
-                headerTitle: "Create",
+                gestureEnabled: false,
+                headerShown: false,
               }}
             />
           </Stack>

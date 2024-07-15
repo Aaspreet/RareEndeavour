@@ -1,10 +1,9 @@
-import { View, Text, FlatList } from "react-native";
+import { View, Text, FlatList, Pressable } from "react-native";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link, Redirect, router, useLocalSearchParams, useRootNavigationState } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { HomeFeedContext } from "../../components/contexts/HomeFeedContext";
-import { RichEditor } from "react-native-pell-rich-editor";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -42,7 +41,8 @@ const Home = () => {
 
   return (
     <SafeAreaView className="" style={{ backgroundColor: "rgb(20, 20, 20)" }} edges={["left", "right", "bottom"]}>
-      <Text className="text-white">abc</Text>
+        <Text className="text-white">abc</Text>
+    <Link href={'login'}>abc</Link>
       <FlatList
         data={posts}
         renderItem={({ item }) => (

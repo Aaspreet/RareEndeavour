@@ -26,16 +26,6 @@ const Layout = () => {
       >
         <Tabs.Screen name="index" />
         <Tabs.Screen name="grid" />
-        {/* <Tabs.Screen
-          name="fake"
-          options={{}}
-          listeners={() => ({
-            tabPress: (e) => {
-              e.preventDefault();
-              router.push("create");
-            },
-          })}
-        /> */}
         <Tabs.Screen name="chat" />
         <Tabs.Screen name="inbox" />
       </Tabs>
