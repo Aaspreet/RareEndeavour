@@ -1,9 +1,14 @@
 import { View, Text } from "react-native";
 import React from "react";
-import { Slot } from "expo-router";
+import { Slot, Stack } from "expo-router";
 
 const Layout = () => {
-  return <Slot />;
+  return (
+    <Stack>
+      <Stack.Screen name="register" options={{ presentation: "modal" }} />
+      <Stack.Screen name="login" options={{ presentation: "modal" }} />
+    </Stack>
+  );
 };
 
 export default Layout;

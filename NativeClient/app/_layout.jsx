@@ -34,7 +34,7 @@ const Layout = () => {
         <SafeAreaProvider>
           <Stack initialRouteName="(app)">
             <Stack.Screen name="(app)" options={{ headerShown: false }} />
-            <Stack.Screen name="(auth)" options={{ presentation: "modal" }} />
+            <Stack.Screen name="(auth)" options={{ presentation: "modal", headerShown: false }} />
             <Stack.Screen
               name="(modals)"
               options={{
