@@ -1,0 +1,12 @@
+Currently using EXPO_PUBLIC as dotenv isnt working with expo router. Take a look later.
+
+Add the:
+<KeyboardAvoidingView
+        className="bg-red-500 flex-1 justify-center"
+        behavior="padding"
+        keyboardVerticalOffset={-100}
+      >
+to login.jsx
+
+Make the username pop down on register.jsx smoother
+I also want to be able to automatically focus on the select username field on continue

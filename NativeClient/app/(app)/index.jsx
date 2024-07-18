@@ -4,8 +4,10 @@ import { Link, Redirect, router, useLocalSearchParams, useRootNavigationState } 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
 import { HomeFeedContext } from "../../components/contexts/HomeFeedContext";
+import { auth } from "../../config/firebaseConfig";
 
 const Home = () => {
+  // console.log(auth);
   const [posts, setPosts] = useState([]);
   const previousScrollOffset = useRef(0);
 
@@ -41,7 +43,6 @@ const Home = () => {
 
   return (
     <SafeAreaView className="" style={{ backgroundColor: "rgb(20, 20, 20)" }} edges={["left", "right", "bottom"]}>
-        <Text className="text-white">abc</Text>
     <Link href={'login'}>abc</Link>
       <FlatList
         data={posts}

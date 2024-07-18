@@ -4,9 +4,13 @@ import { Slot, Stack } from "expo-router";
 
 const Layout = () => {
   return (
-    <Stack>
-      <Stack.Screen name="register" options={{ presentation: "modal" }} />
-      <Stack.Screen name="login" options={{ presentation: "modal" }} />
+    <Stack screenOptions={{ contentStyle: { backgroundColor: "rgba(0, 0, 0,0.7)" },headerShown:false, animation:"fade", animationDuration:100 }}>
+      <Stack.Screen
+        name="register"
+      />
+      <Stack.Screen
+        name="login"
+      />
     </Stack>
   );
 };

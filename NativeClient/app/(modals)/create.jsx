@@ -156,6 +156,14 @@ const Create = () => {
             }}
           />
         </ScrollView>
+        <View className="flex-row justify-end mx-5 mb-1">
+          <Pressable>
+            <Text className="text-white font-semibold" onPress={router.back}>Cancel</Text>
+          </Pressable>
+          {/* <Pressable>
+            <Text className="text-white font-semibold">Post</Text>
+          </Pressable> */}
+        </View>
         {keyboardShowing && <EditorToolbar />}
       </View>
     </SafeAreaView>

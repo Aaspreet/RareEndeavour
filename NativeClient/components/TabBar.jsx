@@ -4,7 +4,7 @@ import { BlurView } from "expo-blur";
 import { useContext } from "react";
 import { HomeFeedContext } from "./contexts/HomeFeedContext";
 import Animated, { useAnimatedProps, useSharedValue, withTiming } from "react-native-reanimated";
-import { FontAwesome, Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { FontAwesome, Ionicons, MaterialCommunityIcons } from "react-native-vector-icons";
 import { Link, router, useLocalSearchParams, useNavigation } from "expo-router";
 
 const TabBar = ({ state, ...rest }) => {
