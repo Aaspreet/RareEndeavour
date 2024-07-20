@@ -10,3 +10,6 @@ to login.jsx
 
 Make the username pop down on register.jsx smoother
 I also want to be able to automatically focus on the select username field on continue
+
+Figure out what the hell I cant put textinput into its own component and then render that component in register.jsx. It would make code much cleaner, but
+the textinput is losing focus everytime a character is entered.

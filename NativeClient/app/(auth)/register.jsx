@@ -5,14 +5,16 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome, Ionicons, MaterialCommunityIcons, AntDesign } from "react-native-vector-icons";
 import { Link } from "expo-router";
 import { auth } from "../../config/firebaseConfig";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
 
 const Register = () => {
   const [selectingUsername, setSelectingUsername] = useState(false);
+  const [verifyingEmail, setVerifyingEmail] = useState(false);
   const [errors, setErrors] = useState({
     email: [],
     password: [],
     username: [],
+    verificationEmail: [],
     general: [],
   });
 
@@ -71,9 +73,16 @@ const Register = () => {
     }
 
     try {
-      await createUserWithEmailAndPassword(auth, data.email, data.password);
-      setSelectingUsername(true);
+      console.log(emailValue, passwordValue, " Creating user");
+      await createUserWithEmailAndPassword(auth, emailValue, passwordValue);
+      await sendEmailVerification(auth.currentUser).catch((err) => {
+        console.log(err);
+      });
+      console.log("Created user");
+
+      setVerifyingEmail(true);
     } catch (error) {
+      console.log(error);
       if (error.code === "auth/email-already-in-use") {
         currentErrors.email.push("Email is already in use");
       } else if (error.code === "auth/invalid-email") {
@@ -87,10 +96,54 @@ const Register = () => {
     }
   };
 
+  const verifiedSubmit = async () => {
+    console.log("im here");
+    const currentErrors = { verificationEmail: [] };
+    try {
+      await auth.currentUser.reload();
+      if (!auth.currentUser.emailVerified) {
+        currentErrors.verificationEmail.push("Email is not verified");
+        setErrors({ ...errors, verificationEmail: currentErrors.verificationEmail });
+        return;
+      }
+
+      setSelectingUsername(true);
+      setVerifyingEmail(false);
+    } catch (error) {
+      currentErrors.verificationEmail.push("Something went wrong");
+      setErrors({ ...errors, verificationEmail: currentErrors.verificationEmail });
+      return;
+    }
+  };
+
+  const onSubmit = async () => {
+    const currentErrors = { username: [] };
+
+    usernameValidationRules.forEach((rule) => {
+      if (!rule.rule(usernameValue)) {
+        console.log(rule.message);
+        currentErrors.username.push(rule.message);
+      }
+    });
+
+    if (currentErrors.username.length > 0) {
+      setErrors({ ...errors, username: currentErrors.username });
+      return;
+    }
+
+    console.log("Username is valid");
+  };
+
+  const EmailInput = () => {};
+
+  const PasswordInput = () => {};
+
+  const UsernameInput = () => {};
+
   return (
     <SafeAreaView className="flex-1">
       <KeyboardAvoidingView
-        className="bg-red-500 flex-1 justify-center"
+        className="flex-1 justify-center"
         behavior="padding"
         keyboardVerticalOffset={-100}
       >
@@ -98,71 +151,98 @@ const Register = () => {
           <View className="mx-4">
             <View className="pb-7">
               <Text className="text-2xl text-center font-bold mb-6">Register</Text>
-              <View className="flex-col gap-y-[25]">
-                <View className="flex-col">
-                  <View className="flex-row">
-                    <TextInput
-                      className="border-b border-zinc-400 p-1 flex-1"
-                      ref={emailRef}
-                      placeholder="Email"
-                      style={{
-                        fontSize: 19,
-                      }}
-                      onChangeText={(text) => {
-                        setEmailValue(text);
-                        setErrors({ ...errors, email: "" });
-                      }}
-                      value={emailValue}
-                    />
+              <View className="flex-col">
+                {!verifyingEmail ? (
+                  <>
+                    <View className="flex-col">
+                      <View className="flex-row">
+                        <TextInput
+                          className="border-b border-zinc-400 p-1 flex-1"
+                          ref={emailRef}
+                          placeholder="Email"
+                          style={{
+                            fontSize: 19,
+                          }}
+                          onChangeText={(text) => {
+                            setEmailValue(text);
+                            setErrors({ ...errors, email: "" });
+                          }}
+                          value={emailValue}
+                          editable={!selectingUsername && !verifyingEmail}
+                          onSubmitEditing={() => {
+                            passwordRef.current.focus();
+                          }}
+                        />
+                      </View>
+                      <Text className="text-red-500">{errors.email[0] || " "}</Text>
+                    </View>
+                    <View className="flex-col">
+                      <View className="flex-row">
+                        <TextInput
+                          className="border-b border-zinc-400 p-1 flex-1"
+                          ref={passwordRef}
+                          placeholder="Password"
+                          style={{
+                            fontSize: 19,
+                          }}
+                          onChangeText={(text) => {
+                            setPasswordValue(text);
+                            setErrors({ ...errors, password: "" });
+                          }}
+                          value={passwordValue}
+                          editable={!selectingUsername && !verifyingEmail}
+                        />
+                        {!selectingUsername && !verifyingEmail && (
+                          <Pressable
+                            className="border rounded-t-lg rounded-br-lg px-2 justify-center  border-zinc-300 border-b-zinc-400"
+                            onPress={onContinue}
+                          >
+                            <AntDesign name="arrowright" size={22} color="black" />
+                          </Pressable>
+                        )}
+                      </View>
+                      <Text className="text-red-500">{errors.password[0] || " "}</Text>
+                    </View>
+                  </>
+                ) : (
+                  <View className="flex-col items-center">
+                    <Text className="text-center">If that email exists</Text>
+                    <Text className="text-center">We sent you an email to verify your account</Text>
+                    <Text className="text-center">Please check your inbox</Text>
+                    <Pressable onPress={verifiedSubmit} className="mt-3">
+                      <Text className="text-center text-blue-500 underline">I have verified my email</Text>
+                    </Pressable>
+                    <Text className="text-red-500">{errors.verificationEmail[0] || " "}</Text>
                   </View>
-                  <Text className="text-red-500">{errors.email[0] || " "}</Text>
-                </View>
-                <View className="flex-col">
-                  <View className="flex-row">
-                    <TextInput
-                      className="border-b border-zinc-400 p-1 flex-1"
-                      ref={passwordRef}
-                      placeholder="Password"
-                      style={{
-                        fontSize: 19,
-                      }}
-                      onChangeText={(text) => {
-                        setPasswordValue(text);
-                        setErrors({ ...errors, password: "" });
-                      }}
-                      value={passwordValue}
-                    />
-                    {!selectingUsername && (
+                )}
+
+                {selectingUsername && (
+                  <View className="flex-col">
+                    <View className="flex-row">
+                      <TextInput
+                        className="border-b border-zinc-400 p-1 flex-1"
+                        ref={usernameRef}
+                        placeholder="Username"
+                        style={{
+                          fontSize: 19,
+                        }}
+                        onChangeText={(text) => {
+                          setUsernameValue(text);
+                          setErrors({ ...errors, username: "" });
+                        }}
+                        value={usernameValue}
+                      />
                       <Pressable
                         className="border rounded-t-lg rounded-br-lg px-2 justify-center  border-zinc-300 border-b-zinc-400"
-                        onPress={onContinue}
+                        onPress={onSubmit}
                       >
                         <AntDesign name="arrowright" size={22} color="black" />
                       </Pressable>
-                    )}
-                  </View>
-                  <Text className="text-red-500">{errors.password[0] || ' '}</Text>
-                </View>
-                {selectingUsername && (
-                  <View className="flex-row">
-                    <TextInput
-                      className="border-b border-zinc-400 p-1 flex-1"
-                      ref={usernameRef}
-                      placeholder="Username"
-                      style={{
-                        fontSize: 19,
-                      }}
-                      onChangeText={(text) => {
-                        setUsernameValue(text);
-                        setErrors({ ...errors, username: "" });
-                      }}
-                      value={usernameValue}
-                    />
-                    <Pressable className="border rounded-t-lg rounded-br-lg px-2 justify-center  border-zinc-300 border-b-zinc-400">
-                      <AntDesign name="arrowright" size={22} color="black" />
-                    </Pressable>
+                    </View>
+                    <Text className="text-red-500">{errors.username[0] || " "}</Text>
                   </View>
                 )}
+                <Text className="text-red-500">{errors.general[0]}</Text>
               </View>
             </View>
             <View className="pb-1 pl-1 items-start">
