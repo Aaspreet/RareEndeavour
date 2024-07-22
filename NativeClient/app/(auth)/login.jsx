@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, SafeAreaView, TextInput, KeyboardAvoidingView, 
 import React, { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { FontAwesome, Ionicons, MaterialCommunityIcons, AntDesign } from "react-native-vector-icons";
-import { Link } from "expo-router";
+import { Link, router } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebaseConfig";
 
@@ -33,12 +33,18 @@ const Login = () => {
     }
 
     try {
-      await signInWithEmailAndPassword(auth, userValue, passwordValue);
+      const {user} = await signInWithEmailAndPassword(auth, userValue, passwordValue);
+
+      if(!user.emailVerified){
+        router.push("verify_email");
+      }
+      //fetch username
     } catch (error) {
+      console.log(error);
       if (error.code === "auth/invalid-email") {
         currentErrors.email.push("Invalid email");
       } else if (error.code === "auth/invalid-credential") {
-        currentErrors.password.push("Incorrect password");
+        currentErrors.general.push("Incorrect password or email");
       } else {
         currentErrors.general.push("An error occurred");
       }
@@ -103,7 +109,7 @@ const Login = () => {
                       </Pressable>
                     </View>
                     <Text className="text-red-500">{errors.password?.[0] || " "}</Text>
-                    <Text className="text-red-500">{errors.general?.[0]}</Text>
+                    <Text className="text-red-500">{errors.general?.[0] || " "}</Text>
                   </View>
                 </>
               </View>

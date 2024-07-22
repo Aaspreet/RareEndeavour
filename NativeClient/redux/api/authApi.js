@@ -8,7 +8,7 @@ export const authApi = createApi({
     prepareHeaders: async (headers) => {
       const token = await auth.currentUser.getIdToken();
       headers.set("Authorization", `Bearer ${token}`);
-      // headers.set("Cache-Control", "no-cache"); 
+      headers.set("Cache-Control", "no-cache"); 
     },
   }),
 

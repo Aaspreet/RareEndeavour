@@ -4,17 +4,12 @@ import { Redirect, router, Slot, Stack, Tabs, useRootNavigationState } from "exp
 import TabBar from "../../components/TabBar";
 import { HomeFeedContext } from "../../components/contexts/HomeFeedContext";
 import Header from "../../components/Header";
+import { auth } from "../../config/firebaseConfig";
+import { onAuthStateChanged } from "firebase/auth";
 
 const Layout = () => {
   const [scrollingDown, setScrollingDown] = useState(false);
-
   const rootNavigationState = useRootNavigationState();
-
-  useEffect(() => {
-    if (rootNavigationState?.key && /** is there is no user */ true) {
-      router.push("register");
-    }
-  }, [rootNavigationState?.key]);
 
   return (
     <HomeFeedContext.Provider value={{ scrollingDown, setScrollingDown }}>
@@ -22,7 +17,6 @@ const Layout = () => {
         screenOptions={(props) => ({ header: () => <Header {...props} /> })}
         initialRouteName="index"
         tabBar={(props) => <TabBar {...props} />}
-      
       >
         <Tabs.Screen name="index" />
         <Tabs.Screen name="grid" />
