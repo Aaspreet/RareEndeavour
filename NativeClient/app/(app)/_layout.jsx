@@ -12,7 +12,7 @@ const Layout = () => {
 
   useEffect(() => {
     if (rootNavigationState?.key && /** is there is no user */ true) {
-      router.push("login");
+      router.push("register");
     }
   }, [rootNavigationState?.key]);
 

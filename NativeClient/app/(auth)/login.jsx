@@ -78,7 +78,7 @@ const Login = () => {
                         }}
                       />
                     </View>
-                    <Text className="text-red-500">{errors.email[0] || " "}</Text>
+                    <Text className="text-red-500">{errors.email?.[0] || " "}</Text>
                   </View>
                   <View className="flex-col">
                     <View className="flex-row">
@@ -102,8 +102,8 @@ const Login = () => {
                         <AntDesign name="arrowright" size={22} color="black" />
                       </Pressable>
                     </View>
-                    <Text className="text-red-500">{errors.password[0] || " "}</Text>
-                    <Text className="text-red-500">{errors.general[0]}</Text>
+                    <Text className="text-red-500">{errors.password?.[0] || " "}</Text>
+                    <Text className="text-red-500">{errors.general?.[0]}</Text>
                   </View>
                 </>
               </View>

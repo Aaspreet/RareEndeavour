@@ -4,10 +4,14 @@ import { Controller, set, useForm } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome, Ionicons, MaterialCommunityIcons, AntDesign } from "react-native-vector-icons";
 import { Link } from "expo-router";
-import { auth } from "../../config/firebaseConfig";
+import { auth } from "../../config/firebaseConfig.js";
 import { createUserWithEmailAndPassword, sendEmailVerification } from "firebase/auth";
+import { useRegisterMutation, useRegisteryMutation, useTestMutation } from "../../redux/api/authApi.js";
+import { useGetUserQuery } from "../../redux/api/userApi.js";
 
 const Register = () => {
+  const [registerTrigger, { data }] = useRegisterMutation();
+
   const [selectingUsername, setSelectingUsername] = useState(false);
   const [verifyingEmail, setVerifyingEmail] = useState(false);
   const [errors, setErrors] = useState({
@@ -40,7 +44,6 @@ const Register = () => {
       message: "Password must contain at least one special character",
     },
   ];
-
   const usernameValidationRules = [
     { rule: (username) => username.length >= 3, message: "Username must be at least 3 characters long" },
     { rule: (username) => username.length <= 20, message: "Username must be at most 20 characters long" },
@@ -51,7 +54,7 @@ const Register = () => {
   ];
 
   const onContinue = async () => {
-    const currentErrors = { email: [], password: [] };
+    const currentErrors = { email: [], password: [], general: [] };
 
     emailValidationRules.forEach((rule) => {
       if (!rule.rule(emailValue)) {
@@ -73,16 +76,13 @@ const Register = () => {
     }
 
     try {
-      console.log(emailValue, passwordValue, " Creating user");
       await createUserWithEmailAndPassword(auth, emailValue, passwordValue);
       await sendEmailVerification(auth.currentUser).catch((err) => {
         console.log(err);
       });
-      console.log("Created user");
-
       setVerifyingEmail(true);
     } catch (error) {
-      console.log(error);
+      console.log(error.code);
       if (error.code === "auth/email-already-in-use") {
         currentErrors.email.push("Email is already in use");
       } else if (error.code === "auth/invalid-email") {
@@ -93,11 +93,11 @@ const Register = () => {
         currentErrors.general.push("An error occurred");
       }
       setErrors(currentErrors);
+      return;
     }
   };
 
   const verifiedSubmit = async () => {
-    console.log("im here");
     const currentErrors = { verificationEmail: [] };
     try {
       await auth.currentUser.reload();
@@ -131,8 +131,14 @@ const Register = () => {
       return;
     }
 
-    console.log("Username is valid");
+    const token = await auth.currentUser.getIdToken();
+    registerTrigger({ username: usernameValue, token: token });
   };
+
+  // useEffect(() => {
+  //   console.log("1111");
+  //   console.log(data);
+  // }, [data]);
 
   const EmailInput = () => {};
 
@@ -142,11 +148,7 @@ const Register = () => {
 
   return (
     <SafeAreaView className="flex-1">
-      <KeyboardAvoidingView
-        className="flex-1 justify-center"
-        behavior="padding"
-        keyboardVerticalOffset={-100}
-      >
+      <KeyboardAvoidingView className="flex-1 justify-center" behavior="padding" keyboardVerticalOffset={-100}>
         <View className="bg-zinc-100 mx-6 rounded-lg pt-8 justify-between">
           <View className="mx-4">
             <View className="pb-7">
@@ -174,7 +176,7 @@ const Register = () => {
                           }}
                         />
                       </View>
-                      <Text className="text-red-500">{errors.email[0] || " "}</Text>
+                      <Text className="text-red-500">{errors.email?.[0] || " "}</Text>
                     </View>
                     <View className="flex-col">
                       <View className="flex-row">
@@ -201,7 +203,7 @@ const Register = () => {
                           </Pressable>
                         )}
                       </View>
-                      <Text className="text-red-500">{errors.password[0] || " "}</Text>
+                      <Text className="text-red-500">{errors.password?.[0] || " "}</Text>
                     </View>
                   </>
                 ) : (
@@ -212,7 +214,7 @@ const Register = () => {
                     <Pressable onPress={verifiedSubmit} className="mt-3">
                       <Text className="text-center text-blue-500 underline">I have verified my email</Text>
                     </Pressable>
-                    <Text className="text-red-500">{errors.verificationEmail[0] || " "}</Text>
+                    <Text className="text-red-500">{errors.verificationEmail?.[0] || " "}</Text>
                   </View>
                 )}
 
@@ -239,10 +241,10 @@ const Register = () => {
                         <AntDesign name="arrowright" size={22} color="black" />
                       </Pressable>
                     </View>
-                    <Text className="text-red-500">{errors.username[0] || " "}</Text>
+                    <Text className="text-red-500">{errors.username?.[0] || " "}</Text>
                   </View>
                 )}
-                <Text className="text-red-500">{errors.general[0]}</Text>
+                <Text className="text-red-500">{errors?.general?.[0] || " "}</Text>
               </View>
             </View>
             <View className="pb-1 pl-1 items-start">

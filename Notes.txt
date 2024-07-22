@@ -1,15 +1,11 @@
 Currently using EXPO_PUBLIC as dotenv isnt working with expo router. Take a look later.
 
-Add the:
-<KeyboardAvoidingView
-        className="bg-red-500 flex-1 justify-center"
-        behavior="padding"
-        keyboardVerticalOffset={-100}
-      >
-to login.jsx
-
-Make the username pop down on register.jsx smoother
+Make the username pop down on register.jsx | smoother animation
 I also want to be able to automatically focus on the select username field on continue
 
 Figure out what the hell I cant put textinput into its own component and then render that component in register.jsx. It would make code much cleaner, but
 the textinput is losing focus everytime a character is entered.
+
+Oganize dependencies and dev dependencies
+
+Smooth out the register and login UI and design.

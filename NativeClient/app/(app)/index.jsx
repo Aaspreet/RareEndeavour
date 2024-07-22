@@ -7,7 +7,6 @@ import { HomeFeedContext } from "../../components/contexts/HomeFeedContext";
 import { auth } from "../../config/firebaseConfig";
 
 const Home = () => {
-  // console.log(auth);
   const [posts, setPosts] = useState([]);
   const previousScrollOffset = useRef(0);
 
@@ -39,7 +38,7 @@ const Home = () => {
       setPosts(data.posts);
     };
     fetchPosts();
-  }, []);
+  }, [scrollingDown]);
 
   return (
     <SafeAreaView className="" style={{ backgroundColor: "rgb(20, 20, 20)" }} edges={["left", "right", "bottom"]}>
