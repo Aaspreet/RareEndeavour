@@ -3,6 +3,7 @@ import http from "http";
 import cors from "cors";
 import authRouter from "./routes/auth_router.js";
 import testRouter from "./routes/test_router.js";
+import admin from "./config/fb_admin.js";
 
 const app = express();
 
@@ -23,3 +24,23 @@ app.use((err, req, res, next) => {
 server.listen(5000, () => {
   console.log("Server is running on port 5000");
 });
+
+
+// const deleteAllUsers = async (nextPageToken) => {
+//   // List batch of users, 1000 at a time.
+//   const listUsersResult = await admin.auth().listUsers(1000, nextPageToken);
+
+//   // Delete each user.
+//   const deletionPromises = listUsersResult.users.map((user) => {
+//     console.log(`Deleting user with UID: ${user.uid}`);
+//     return admin.auth().deleteUser(user.uid);
+//   });
+//   await Promise.all(deletionPromises);
+
+//   if (listUsersResult.pageToken) {
+//     // If there are more users, delete them.
+//     await deleteAllUsers(listUsersResult.pageToken);
+//   }
+// };
+
+// deleteAllUsers().catch(console.error);

@@ -1,12 +1,13 @@
-
+import { asyncQuery } from "../utils/async_query.js";
 
 export const register = async (req, res, next) => {
-    try {
-        console.log(req.headers)
-        //uid, username, profile pic, timestamp
-        console.log('its working!?')
-    } catch (error) {
-        
-    }
+  try {
+    const user = req.user;
+    const username = req.body.username;
+    console.log(user);
+    const userByUsername = await asyncQuery("FIND users WHERE uid = ?", [user.uid]);
+    console.log(userByUsername);
 
-}
+    await asyncQuery("INSERT INTO users (uid, username) VALUES (?, ?)", [user.uid, username]);
+  } catch (error) {}
+};

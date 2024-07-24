@@ -7,8 +7,9 @@ import { FontAwesome, Ionicons, MaterialCommunityIcons, AntDesign } from "react-
 import { onAuthStateChanged } from "firebase/auth";
 
 const SelectUsername = () => {
-  const [usernameValue, setUsernameValue] = useState("");
   const [errors, setErrors] = useState({ username: [] });
+
+  const [usernameValue, setUsernameValue] = useState("");
 
   const usernameRef = useRef();
 
@@ -38,8 +39,7 @@ const SelectUsername = () => {
       return;
     }
 
-    const token = await auth.currentUser.getIdToken();
-    registerTrigger({ username: usernameValue, token: token });
+    registerTrigger({ username: usernameValue });
   };
 
   useEffect(() => {

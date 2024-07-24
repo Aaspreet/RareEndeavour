@@ -42,19 +42,19 @@ const Register = () => {
   const onContinue = async () => {
     const currentErrors = { email: [], password: [], general: [] };
 
-    emailValidationRules.forEach((rule) => {
-      if (!rule.rule(emailValue)) {
-        console.log(rule.message);
-        currentErrors.email.push(rule.message);
-      }
-    });
+    // emailValidationRules.forEach((rule) => {
+    //   if (!rule.rule(emailValue)) {
+    //     console.log(rule.message);
+    //     currentErrors.email.push(rule.message);
+    //   }
+    // });
 
-    passwordValidationRules.forEach((rule) => {
-      if (!rule.rule(passwordValue)) {
-        console.log(rule.message);
-        currentErrors.password.push(rule.message);
-      }
-    });
+    // passwordValidationRules.forEach((rule) => {
+    //   if (!rule.rule(passwordValue)) {
+    //     console.log(rule.message);
+    //     currentErrors.password.push(rule.message);
+    //   }
+    // });
 
     if (currentErrors.email.length > 0 || currentErrors.password.length > 0) {
       setErrors(currentErrors);
