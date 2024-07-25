@@ -1,14 +1,14 @@
 Currently using EXPO_PUBLIC as dotenv isnt working with expo router. Take a look later.
 
-// Make the username pop down on register.jsx | smoother animation
-//- I also want to be able to automatically focus on the select username field on continue
+ Make the username pop down on register.jsx | smoother animation
+ I also want to be able to automatically focus on the select username field on continue
 
 Figure out what the hell I cant put textinput into its own component and then render that component in register.jsx. It would make code much cleaner, but
 the textinput is losing focus everytime a character is entered.
 
 Oganize dependencies and dev dependencies
 
-// Smooth out the register and login UI and design.
+ Smooth out the register and login UI and design.
 
 Tell user email doesnt exist if verification email fails to send.
 
@@ -24,3 +24,10 @@ useEffect(() => {
       unsubscribeAuthState();
     };
   }, []);
+
+Make sure the username validation in select_username.jsx to the same as the one in the users schema in the database
+Also check email as well
+
+REALLY REALLY GOTTA FIX UP AUTH UI
+
+cant figure out how to continue with google. I give up.

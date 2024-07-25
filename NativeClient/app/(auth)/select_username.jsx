@@ -13,7 +13,7 @@ const SelectUsername = () => {
 
   const usernameRef = useRef();
 
-  const [registerTrigger, { data }] = useRegisterMutation();
+  const [registerTrigger, { data: queryData, error: queryError }] = useRegisterMutation();
 
   const usernameValidationRules = [
     { rule: (username) => username.length >= 3, message: "Username must be at least 3 characters long" },
@@ -81,7 +81,8 @@ const SelectUsername = () => {
                   <AntDesign name="arrowright" size={22} color="black" />
                 </Pressable>
               </View>
-              <Text className="text-red-500">{errors.username?.[0] || " "}</Text>
+              <Text className="text-red-500">{errors.username?.[0] || queryError?.data?.message || " "}</Text>
+              <Text className="text-green-500">{queryData?.message || " "}</Text>
             </View>
           </View>
         </View>

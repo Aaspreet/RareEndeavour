@@ -2,7 +2,7 @@
 CREATE TABLE users (
     uid VARCHAR(255) PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
-    profile_picture VARCHAR(255),
+    profile_picture VARCHAR(255) DEFAULT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 

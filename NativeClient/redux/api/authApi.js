@@ -6,13 +6,12 @@ export const authApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.EXPO_PUBLIC_API_URL}/api/auth`,
     prepareHeaders: async (headers) => {
-      const token = await auth.currentUser.getIdToken();
+      const token = await auth.currentUser.getIdToken(true);
       headers.set("Authorization", `Bearer ${token}`);
       headers.set("Cache-Control", "no-cache"); 
     },
   }),
 
-  tagTypes: ["auth"],
   endpoints: (builder) => ({
     register: builder.mutation({
       query: ({ username, token }) => {
@@ -26,11 +25,10 @@ export const authApi = createApi({
         console.log("Query started");
         try {
           const { data } = await queryFulfilled;
-          console.log(data);
         } catch (error) {
-          console.log(error);
         }
       },
+
     }),
   }),
 });

@@ -11,6 +11,12 @@ const Layout = () => {
   const [scrollingDown, setScrollingDown] = useState(false);
   const rootNavigationState = useRootNavigationState();
 
+  useEffect(() => {
+    setTimeout(() => {
+      router.push('register');
+    }, 400);
+  }, []);
+
   return (
     <HomeFeedContext.Provider value={{ scrollingDown, setScrollingDown }}>
       <Tabs

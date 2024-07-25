@@ -5,6 +5,7 @@ import { FontAwesome, Ionicons, MaterialCommunityIcons, AntDesign } from "react-
 import { Link, router } from "expo-router";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebaseConfig";
+import ContinueWithGoogle from "./continue_with_google";
 
 const Login = () => {
   const [errors, setErrors] = useState({
@@ -33,9 +34,9 @@ const Login = () => {
     }
 
     try {
-      const {user} = await signInWithEmailAndPassword(auth, userValue, passwordValue);
+      const { user } = await signInWithEmailAndPassword(auth, userValue, passwordValue);
 
-      if(!user.emailVerified){
+      if (!user.emailVerified) {
         router.push("verify_email");
       }
       //fetch username
@@ -54,12 +55,11 @@ const Login = () => {
 
   return (
     <SafeAreaView className="flex-1">
-      <KeyboardAvoidingView
-        className="flex-1 justify-center"
-        behavior="padding"
-        keyboardVerticalOffset={-100}
-      >
+      <KeyboardAvoidingView className="flex-1 justify-center" behavior="padding" keyboardVerticalOffset={-100}>
         <View className="bg-zinc-100 mx-6 rounded-lg pt-8 justify-between">
+          <Pressable className="absolute right-0 top-0 py-2 px-3" onPress={router.back}>
+            <Text>---</Text>
+          </Pressable>
           <View className="mx-4">
             <View className="pb-7">
               <Text className="text-2xl text-center font-bold mb-6">Login</Text>
@@ -122,10 +122,7 @@ const Login = () => {
                     Sign up
                   </Link>
                 </View>
-                <View className="border p-2 flex-row rounded-lg mt-1">
-                  <Text className="mr-2">G</Text>
-                  <Text>Continue with Google</Text>
-                </View>
+                <ContinueWithGoogle />
               </View>
             </View>
           </View>

@@ -15,6 +15,7 @@ const Layout = () => {
       <Stack.Screen name="register" />
       <Stack.Screen name="login" />
       <Stack.Screen name="verify_email" />
+      <Stack.Screen name="select_username" />
     </Stack>
   );
 };
