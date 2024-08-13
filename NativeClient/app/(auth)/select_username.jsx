@@ -45,7 +45,7 @@ const SelectUsername = () => {
   useEffect(() => {
     if (auth.currentUser) {
       if (!auth.currentUser.emailVerified) {
-        router.replace("verify_email");
+        router.replace("verify-email");
       }
     } else {
       router.replace("login");

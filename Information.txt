@@ -1,0 +1,13 @@
+  const emailValidationRules = [
+    { rule: (email) => email.match(/^[^\s@]+@[^\s@]+\.[^\s@]+$/), message: "Email is invalid" },
+  ];
+
+   const passwordValidationRules = [
+    { rule: (password) => password.length >= 6, message: "Password must be at least 6 characters long" },
+    { rule: (password) => password.length <= 25, message: "Password must be at most 25 characters long" },
+    { rule: (password) => password.match(/[A-Z]/), message: "Password must contain at least one uppercase letter" },
+    { rule: (password) => password.match(/[a-z]/), message: "Password must contain at least one lowercase letter" },
+    { rule: (password) => password.match(/[0-9]/), message: "Password must contain at least one number" },
+  ];
+
+  Have the above be the same in the the backend

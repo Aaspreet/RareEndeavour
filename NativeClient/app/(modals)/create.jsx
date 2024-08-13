@@ -10,15 +10,16 @@ import {
   Button,
 } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { useForm, SubmitHandler, Controller, set } from "react-hook-form";
+import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
+import { useCreatePostMutation } from "../../redux/api/postsApi";
 
 const Create = () => {
   const bodyInputRef = useRef(null);
   const titleInputRef = useRef(null);
   const scrollViewRef = useRef(null);
 
+  const [titleText, setTitleText] = useState("");
   const [bodyText, setBodyText] = useState("");
   const [selection, setSelection] = useState({ start: 0, end: 0 });
 
@@ -27,12 +28,44 @@ const Create = () => {
   const [scrolling, setScrolling] = useState(false);
 
   const [bodyInputFocused, setBodyInputFocused] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
+  const insets = useSafeAreaInsets();
+
+  const [
+    createPostTrigger,
+    {
+      data: createPostData,
+      error: createPostError,
+      isLoading: createPostIsLoading,
+      isSuccess: createPostIsSuccess,
+      isError: createPostIsError,
+    },
+  ] = useCreatePostMutation();
 
   const handleContentSizeChange = (e) => {
     if (selection.start === selection.end && selection.start === bodyText.length && bodyInputRef.current.isFocused()) {
       scrollViewRef.current.scrollToEnd();
     }
   };
+
+  const handleSubmit = () => {
+    if (titleText.length < 10) return setToastMessage("Title must be at least 10 characters");
+    if (bodyText.length < 10) return setToastMessage("Body must be at least 10 characters");
+    createPostTrigger({ title: titleText, body: bodyText });
+  };
+
+  useEffect(() => {
+    if (createPostError) {
+      setToastMessage(createPostError?.data?.message);
+    }
+  }, [createPostError]);
+
+  useEffect(() => {
+    if (createPostIsSuccess) {
+      router.back();
+    }
+  }, [createPostData]);
 
   useEffect(() => {
     const keyboardWillShow = Keyboard.addListener("keyboardWillShow", (e) => {
@@ -48,6 +81,10 @@ const Create = () => {
     });
     const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
       setKeyboardShowing(false);
+    });
+
+    router.setParams({
+      enableGestures: "false",
     });
 
     return () => {
@@ -66,6 +103,9 @@ const Create = () => {
             <Text className="text-white">B</Text>
           </Pressable>
         </View>
+        <Pressable className="flex-row items-center justify-center px-3" onPress={handleSubmit}>
+          <Text className="text-white text-center">POST</Text>
+        </Pressable>
         <Pressable
           className="flex-row items-center justify-center px-3"
           onPress={() => {
@@ -79,28 +119,8 @@ const Create = () => {
   };
 
   return (
-    <SafeAreaView className="flex-1" edges={["left", "right"]} style={{ backgroundColor: "rgb(20, 20, 20)" }}>
-      {/* <View className="bg-black flex-row h-[45] justify-center p-2">
-        <View className="flex-1">
-          <View className="flex-row flex-1 items-center">
-            <Pressable className="px-5 ml-2 text-center justify-center" onPress={router.back}>
-              <Text className="text-white text-2xl text-center">X</Text>
-            </Pressable>
-          </View>
-        </View>
-        <Pressable className="justify-center">
-          <Text className="text-white font-bold text-xl">Create</Text>
-        </Pressable>
-        <View className="flex-1">
-          <View className="flex-row flex-1 items-center justify-end">
-            <Pressable className="justify-center px-3 mr-2 bg-zinc-700 rounded-lg">
-              <Text className="text-white text-xl font-bold">Post</Text>
-            </Pressable>
-          </View>
-        </View>
-      </View> */}
-
-      <View className="flex-1" style={{ marginBottom: keyboardShowing && keyboardHeight }}>
+    <SafeAreaView className="flex-1" edges={["left", "right", 'bottom']} style={{ backgroundColor: "rgb(20, 20, 20)" }}>
+      <View className="flex-1" style={{ marginBottom: keyboardShowing && keyboardHeight - insets.bottom }}>
         <ScrollView
           className="flex-1"
           ref={scrollViewRef}
@@ -116,6 +136,7 @@ const Create = () => {
           <TextInput
             className="font-bold px-4 mt-2 pb-2 text-white"
             ref={titleInputRef}
+            value={titleText}
             style={{ fontSize: 30 }}
             placeholderTextColor={"white"}
             placeholder="Title"
@@ -124,6 +145,10 @@ const Create = () => {
             returnKeyType="next"
             scrollEnabled={false}
             enablesReturnKeyAutomatically={true}
+            onChangeText={(e) => {
+              setTitleText(e);
+              if (toastMessage) setToastMessage("");
+            }}
             autoFocus={true}
             blurOnSubmit={true}
             onSubmitEditing={() => {
@@ -140,6 +165,7 @@ const Create = () => {
             style={{ fontSize: 22 }}
             onChangeText={(e) => {
               setBodyText(e);
+              if (toastMessage) setToastMessage("");
             }}
             value={bodyText}
             onSelectionChange={(e) => setSelection(e.nativeEvent.selection)}
@@ -151,14 +177,14 @@ const Create = () => {
             onBlur={() => {
               setBodyInputFocused(false);
             }}
-            onPress={(e) => {
-              console.log("press");
-            }}
           />
         </ScrollView>
-        <View className="flex-row justify-end mx-5 mb-1">
+        <View className="flex-row justify-between mx-5 mb-1">
+          <Text className="text-red-500 font-semibold">{toastMessage}</Text>
           <Pressable>
-            <Text className="text-white font-semibold" onPress={router.back}>Cancel</Text>
+            <Text className="text-white font-semibold" onPress={router.back}>
+              Cancel
+            </Text>
           </Pressable>
           {/* <Pressable>
             <Text className="text-white font-semibold">Post</Text>

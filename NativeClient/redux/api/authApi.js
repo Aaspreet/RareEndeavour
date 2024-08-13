@@ -1,5 +1,6 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 import { auth } from "../../config/firebaseConfig.js";
+import { userApi } from "./userApi.js";
 
 export const authApi = createApi({
   reducerPath: "authApi",
@@ -8,27 +9,27 @@ export const authApi = createApi({
     prepareHeaders: async (headers) => {
       const token = await auth.currentUser.getIdToken(true);
       headers.set("Authorization", `Bearer ${token}`);
-      headers.set("Cache-Control", "no-cache"); 
+      // headers.set("Cache-Control", "no-cache");
     },
   }),
-
   endpoints: (builder) => ({
     register: builder.mutation({
-      query: ({ username, token }) => {
+      query: (userInfo) => {
         return {
           url: "/register",
           method: "POST",
-          body: { username },
+          body: { ...userInfo },
         };
       },
-      onQueryStarted: async (arg, { queryFulfilled }) => {
-        console.log("Query started");
+      onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
+        console.log("Query started " + arg);
         try {
           const { data } = await queryFulfilled;
+          dispatch(userApi.util.invalidateTags(["user"]));
         } catch (error) {
+          console.log(error);
         }
       },
-
     }),
   }),
 });

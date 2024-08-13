@@ -31,3 +31,12 @@ Also check email as well
 REALLY REALLY GOTTA FIX UP AUTH UI
 
 cant figure out how to continue with google. I give up.
+
+move Tabbar translucent animation isScrollingDown logic into a seperate jsx file and implment it for both index and grid
+
+figure out why the hell I cant put things in other components and then have them go into the root component. Why does it rerender whenever I update any state.
+
+Restrict password reset emails
+
+Reorganize routing structure. I dont like a seperate modals folder at root directory.
+

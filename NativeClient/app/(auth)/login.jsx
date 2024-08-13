@@ -1,9 +1,8 @@
 import { View, Text, StyleSheet, SafeAreaView, TextInput, KeyboardAvoidingView, Pressable } from "react-native";
 import React, { useRef, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
 import { FontAwesome, Ionicons, MaterialCommunityIcons, AntDesign } from "react-native-vector-icons";
 import { Link, router } from "expo-router";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { sendPasswordResetEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../config/firebaseConfig";
 import ContinueWithGoogle from "./continue_with_google";
 
@@ -19,6 +18,8 @@ const Login = () => {
 
   const [userValue, setUserValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
+
+  const [generalMessage, setGeneralMessage] = useState("");
 
   const onSubmit = async () => {
     const currentErrors = { email: [], password: [], general: [] };
@@ -37,9 +38,13 @@ const Login = () => {
       const { user } = await signInWithEmailAndPassword(auth, userValue, passwordValue);
 
       if (!user.emailVerified) {
-        router.push("verify_email");
+        router.push("verify-email");
       }
+
       //fetch username
+
+      //if username exists
+      router.back();
     } catch (error) {
       console.log(error);
       if (error.code === "auth/invalid-email") {
@@ -50,6 +55,14 @@ const Login = () => {
         currentErrors.general.push("An error occurred");
       }
       setErrors(currentErrors);
+    }
+  };
+
+  const handleForgotPassword = async () => {
+    try {
+      await sendPasswordResetEmail(auth, userValue);
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -108,8 +121,17 @@ const Login = () => {
                         <AntDesign name="arrowright" size={22} color="black" />
                       </Pressable>
                     </View>
-                    <Text className="text-red-500">{errors.password?.[0] || " "}</Text>
-                    <Text className="text-red-500">{errors.general?.[0] || " "}</Text>
+                    <View className="flex-row">
+                      <View className="flex-1">
+                        <Text className="text-red-500">{errors.password?.[0] || " "}</Text>
+                        <Text className="text-red-500">{errors.general?.[0] || " "}</Text>
+                      </View>
+                      <Link href={"forgot_password"} push asChild>
+                        <Pressable>
+                          <Text className="text-orange-500 font-bold">Forgot Password</Text>
+                        </Pressable>
+                      </Link>
+                    </View>
                   </View>
                 </>
               </View>

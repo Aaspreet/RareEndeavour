@@ -1,6 +1,5 @@
 import { View, Text, TextInput, Pressable, KeyboardAvoidingView, TouchableOpacity } from "react-native";
 import React, { useEffect, useRef, useState } from "react";
-import { Controller, set, useForm } from "react-hook-form";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { FontAwesome, Ionicons, MaterialCommunityIcons, AntDesign } from "react-native-vector-icons";
 import { Link, router } from "expo-router";
@@ -73,7 +72,7 @@ const Register = () => {
     try {
       await createUserWithEmailAndPassword(auth, emailValue, passwordValue);
 
-      router.push("verify_email");
+      router.push("verify-email");
     } catch (error) {
       console.log(error.code);
       if (error.code === "auth/email-already-in-use") {

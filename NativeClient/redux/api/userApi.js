@@ -1,22 +1,46 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { auth } from "../../config/firebaseConfig";
 
 export const userApi = createApi({
   reducerPath: "userApi",
-  baseQuery: fetchBaseQuery({ baseUrl: `${process.env.EXPO_PUBLIC_API_URL}/api/test` }),
+  baseQuery: fetchBaseQuery({
+    baseUrl: `${process.env.EXPO_PUBLIC_API_URL}/api/user`,
+    prepareHeaders: async (headers) => {
+      const token = await auth.currentUser.getIdToken(true);
+      headers.set("Authorization", `Bearer ${token}`);
+      // headers.set("Cache-Control", "no-cache");
+    },
+  }),
   tagTypes: ["user"],
   endpoints: (builder) => ({
-    testQ: builder.query({
-      query: () => "/",
-      // providesTags: ["user"],
+    fetchUsername: builder.query({
+      query: () => `get_username`,
+      providesTags: ["user"],
+
     }),
-    testM: builder.mutation({
-      query: () => ({
-        url: "/",
+    getProfilePicture: builder.query({
+      query: () => `get_profile_picture`,
+      providesTags: ["user"],
+    }),
+    getTimestamp: builder.query({
+      query: () => `get_date_created`,
+      providesTags: ["user"],
+    }),
+    updateProfilePicture: builder.mutation({
+      query: ({profilePicture}) => ({
+        url: `update_profile_picture`,
         method: "POST",
+        body: { profilePicture },
       }),
-      // invalidatesTags: ["user"],
+      invalidatesTags: ["user"],
     }),
   }),
 });
 
-export const { useTestQQuery, useTestMMutation, useLazyTestQQuery } = userApi;
+export const {
+  useFetchUsernameQuery,
+  useLazyFetchUsernameQuery,
+  useGetProfilePictureQuery,
+  useGetTimestampQuery,
+  useUpdateProfilePictureMutation,
+} = userApi;

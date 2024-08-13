@@ -18,7 +18,7 @@ const Header = ({ route, navigation, ...rest }) => {
     index: "Home",
     grid: "Grid",
     create: "Create",
-    chat: "Messages",
+    chat: "Chat",
     inbox: "Inbox",
   };
   const title = headerTitles[route.name];
@@ -48,7 +48,7 @@ const Header = ({ route, navigation, ...rest }) => {
 
   //MAKE SURE TO ADD AnimatedSafeAreaView
   return (
-    <SafeAreaView edges={["left", "right"]} className="bg-zinc-950 justify-end">
+    <SafeAreaView edges={["left", "right"]} className="bg-zinc-950">
       <View className="flex-row justify-center pb-2" style={{ paddingTop: insets.top }}>
         <Switch />
       </View>

@@ -13,8 +13,8 @@ const Layout = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      router.push('register');
-    }, 400);
+      router.push({ pathname: "user-access", search: { mode: "login" } });
+    }, 1000);
   }, []);
 
   return (
@@ -24,8 +24,8 @@ const Layout = () => {
         initialRouteName="index"
         tabBar={(props) => <TabBar {...props} />}
       >
-        <Tabs.Screen name="index" />
-        <Tabs.Screen name="grid" />
+        <Tabs.Screen name="index" options={{ headerShown: false }} />
+        <Tabs.Screen name="grid" options={{ headerShown: false }} />
         <Tabs.Screen name="chat" />
         <Tabs.Screen name="inbox" />
       </Tabs>

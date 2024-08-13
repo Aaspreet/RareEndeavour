@@ -3,6 +3,7 @@ CREATE TABLE users (
     uid VARCHAR(255) PRIMARY KEY,
     username VARCHAR(50) NOT NULL UNIQUE,
     profile_picture VARCHAR(255) DEFAULT NULL,
+    bio VARCHAR(255) DEFAULT NULL,
     timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -65,4 +66,11 @@ CREATE TABLE comment_votes (
 );
 
 --@block
-DESCRIBE users;
+-- SELECT * FROM posts;
+DESCRIBE comments;
+
+-- Add bio column to users table
+-- ALTER TABLE users ADD COLUMN bio VARCHAR(255) DEFAULT NULL;
+
+--@block
+SELECT * FROM posts;
