@@ -5,10 +5,8 @@ export const getUsername = async (req, res, next) => {
   try {
     const user = req.user;
     const username = await asyncQuery("SELECT username FROM users WHERE uid = ?", [user.uid]);
-    console.log(username + " logging from user_controller getUsername");
     return res.status(200).json({ success: "true", username: username[0]?.username || null });
   } catch (error) {
-    console.log(error);
     return next(errorHandler(500, error.message || "Internal Server Error While Fetching Username"));
   }
 };

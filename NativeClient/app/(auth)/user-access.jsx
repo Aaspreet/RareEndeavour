@@ -9,12 +9,14 @@ import { auth } from "../../config/firebaseConfig";
 import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { useLazyFetchUsernameQuery, userApi } from "../../redux/api/userApi";
+import ForgotPassword from "../../components/ForgotPassword";
 
 const UserAccess = () => {
   const { mode } = useLocalSearchParams();
 
   const emailRef = useRef();
   const passwordRef = useRef();
+  const bottomSheetModalRef = useRef(null);
 
   const [emailValue, setEmailValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
@@ -84,10 +86,10 @@ const UserAccess = () => {
   const handleLogin = async () => {
     setIsLoading(true);
 
-    if (!emailValue) setEmailError("Email is required");
-    if (!passwordValue) setPasswordError("Password is required");
-    if (!emailValue || !passwordValue) return setIsLoading(false);
-
+    if (!emailValue) {
+      setEmailError("Email is required");
+      return setIsLoading(false);
+    }
     try {
       const { user } = await signInWithEmailAndPassword(auth, emailValue, passwordValue);
       dispatch(userApi.util.invalidateTags(["user"]));
@@ -111,21 +113,23 @@ const UserAccess = () => {
       if (error.code === "auth/invalid-email") {
         setEmailError("Invalid email");
       } else if (error.code === "auth/user-not-found") {
-        setGeneralError("Incorrect email or password");
+        setEmailError("No account with that email");
+      } else if (error.code === "auth/wrong-password") {
+        setPasswordError("Incorrect password");
+      } else if (error.code === "auth/missing-password") {
+        setPasswordError("Password is required");
+      } else if (error.code === "auth/too-many-requests") {
+        setGeneralError("Too many requests, try again later");
       } else {
-        setGeneralError("An error occurred");
+        setGeneralError("Server error");
       }
       setIsLoading(false);
     }
   };
 
-  useEffect(() => {
-    console.log("mode");
-  }, []);
-
   return (
     <SafeAreaView className="flex-1 bg-primary" edges={["top", "left", "right", "bottom"]}>
-      <KeyboardAvoidingView className="flex-1 justify-center mb-[24]" behavior="padding">
+      <KeyboardAvoidingView className="flex-1 justify-center mb-[15]" behavior="padding">
         <View className="mx-[20]">
           <Text
             className="text-mainText"
@@ -165,6 +169,7 @@ const UserAccess = () => {
               fontSize: 15,
               fontFamily: "p-medium",
             }}
+            keyboardAppearance="dark"
             ref={emailRef}
             value={emailValue}
             onChangeText={(text) => {
@@ -193,6 +198,7 @@ const UserAccess = () => {
               fontSize: 15,
               fontFamily: "p-medium",
             }}
+            keyboardAppearance="dark"
             ref={passwordRef}
             value={passwordValue}
             onChangeText={(text) => {
@@ -203,19 +209,34 @@ const UserAccess = () => {
             placeholder="Password"
             placeholderTextColor={colors.mainText}
           />
-          <Text
-            className="text-mainRed px-[10]"
-            style={{
-              fontSize: 13,
-              fontFamily: "p-medium",
-            }}
-          >
-            {passwordError}
-          </Text>
+          <View className="flex-row justify-between px-[10]">
+            <Text
+              className="text-mainRed flex-1"
+              style={{
+                fontSize: 13,
+                fontFamily: "p-medium",
+              }}
+            >
+              {passwordError || "\n"}
+            </Text>
+            {mode == "login" && (
+              <Pressable className="ml-[16] pb-[4]" onPress={() => bottomSheetModalRef.current.present()}>
+                <Text
+                  className="text-secondaryText"
+                  style={{
+                    fontSize: 13,
+                    fontFamily: "p-medium",
+                  }}
+                >
+                  Forgot password
+                </Text>
+              </Pressable>
+            )}
+          </View>
         </View>
         <View className="items-center mt-[30]">
           <Pressable
-            className="flex-row items-center py-[4] px-[8]"
+            className="flex-row items-center py-[4] px-[20]"
             onPress={mode == "login" ? handleLogin : handleRegister}
             disabled={isLoading}
           >
@@ -239,7 +260,7 @@ const UserAccess = () => {
       </KeyboardAvoidingView>
       <View className="items-center mb-[17] flex-row justify-center">
         <Link
-          className="items-center py-[4] px-[4]"
+          className="items-center py-[18] px-[4]"
           href={{ pathname: "user-access", params: { mode: mode == "login" ? "register" : "login" } }}
           disabled={isLoading}
           replace
@@ -253,7 +274,7 @@ const UserAccess = () => {
               lineHeight: 20,
             }}
           >
-            {mode == "login" ? "Login" : "Sign up"}
+            {mode == "login" ? "Sign Up" : "Login"}
           </Text>
         </Link>
         <Text
@@ -275,6 +296,7 @@ const UserAccess = () => {
       >
         <Close colour={colors.mainText} height={27} />
       </Pressable>
+      <ForgotPassword ref={bottomSheetModalRef}></ForgotPassword>
     </SafeAreaView>
   );
 };

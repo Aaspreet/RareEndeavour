@@ -34,7 +34,7 @@ const VerifyEmail = () => {
         return setIsLoading(false);
       }
 
-      router.replace("select_username");
+      router.replace("select-username");
     } catch (error) {
       setEmailVerificationError("Hmm... Something went wrong");
       return setIsLoading(false);

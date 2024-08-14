@@ -12,10 +12,8 @@ const Layout = () => {
         animationDuration: 100,
       }}
     >
-      <Stack.Screen name="register" />
-      <Stack.Screen name="login" />
       <Stack.Screen name="verify-email" />
-      <Stack.Screen name="select_username" />
+      <Stack.Screen name="select-username" />
       <Stack.Screen name="user-access" />
     </Stack>
   );

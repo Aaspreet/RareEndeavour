@@ -7,19 +7,20 @@ export const register = async (req, res, next) => {
     const username = req.body.username;
 
     const uidRegistered = await asyncQuery("SELECT EXISTS ( SELECT 1 FROM users WHERE uid = ? )", [user.uid]);
+    
     if (Object.values(uidRegistered[0])[0]) {
-      return next(errorHandler(400, "this account already has a username"));
+      return next(errorHandler(400, "This account already has a username..."));
     }
     const usernameExists = await asyncQuery("SELECT EXISTS ( SELECT 1 FROM users WHERE username = ? )", [username]);
     if (Object.values(usernameExists[0])[0]) {
-      return next(errorHandler(400, "username already exists"));
+      return next(errorHandler(400, "Username already exists"));
     }
 
     await asyncQuery("INSERT INTO users (uid, username) VALUES (?, ?)", [user.uid, username]);
-    return res.status(201).json({ success: true, message: "User registered successfully" });
+    return res.status(201).json({ success: true, message: "User registered successfully!" });
 
   } catch (error) {
     console.log(error);
-    return next(errorHandler(500, error.message || "Internal Server Error While Registering"));
+    return next(errorHandler(500, error.message || "Internal server error while registering."));
   }
 };

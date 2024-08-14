@@ -73,4 +73,7 @@ DESCRIBE comments;
 -- ALTER TABLE users ADD COLUMN bio VARCHAR(255) DEFAULT NULL;
 
 --@block
-SELECT * FROM posts;
+-- SELECT * FROM posts;
+
+--@block
+-- SELECT * FROM users;

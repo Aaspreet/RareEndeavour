@@ -10,7 +10,6 @@ import { auth } from "../config/firebaseConfig";
 import tailwindConfig from "../tailwind.config";
 import { rgba } from "polished";
 import Svg, { G, Path } from "react-native-svg";
-import Icon from "./utils/Icon";
 import {
   ChatFill,
   ChatOutline,

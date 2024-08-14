@@ -82,7 +82,7 @@ const Layout = () => {
           );
         }}
       >
-        <BottomSheetView style={{ }}>
+        <BottomSheetView style={{}}>
           <Text
             className="text-mainText mt-[30] mb-[35]"
             style={{
@@ -155,7 +155,7 @@ const Layout = () => {
               <AuthModalContext.Provider value={{ presentAuthModal }}>
                 <Stack screenOptions={{ headerShown: false }}>
                   <Stack.Screen name="(tabs)" />
-                  <Stack.Screen name="(auth)" options={{ presentation: "fullScreenModal" }} />
+                  <Stack.Screen name="(auth)" options={{ animation: "slide_from_bottom" }} />
                   <Stack.Screen name="(test)" />
                 </Stack>
               </AuthModalContext.Provider>

@@ -37,7 +37,7 @@ const SelectUsername = () => {
     }
 
     if (queryData) {
-      router.replace("/");
+      router.push("/");
     }
   }, [queryError, queryData]);
 
@@ -90,6 +90,7 @@ const SelectUsername = () => {
               setUsernameValue(text);
               setUsernameError("");
             }}
+            keyboardAppearance="dark"
             placeholder="Username"
             placeholderTextColor={colors.mainText}
           />
@@ -106,7 +107,7 @@ const SelectUsername = () => {
 
         <View className="items-center mt-[40]">
           <Pressable
-            className="flex-row items-center pt-[4] px-[8]"
+            className="flex-row items-center pt-[4] px-[20]"
             onPress={() => {
               handleSubmit();
             }}

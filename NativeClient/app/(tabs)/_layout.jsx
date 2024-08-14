@@ -13,8 +13,9 @@ const Layout = () => {
 
   useEffect(() => {
     setTimeout(() => {
-      router.push({ pathname: "user-access", search: { mode: "login" } });
-    }, 1000);
+      router.push({ pathname: "user-access", params: { mode: "login" } });
+      // router.push("inbox")
+    }, 400);
   }, []);
 
   return (
