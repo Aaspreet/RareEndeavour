@@ -1,5 +1,5 @@
-import admin from "../config/fb_admin.js";
-import errorHandler from "./error_handler.js";
+import admin from "../config/fbAdmin.js";
+import errorHandler from "./errorHandler.js";
 
 const verifyTokenRequired = async (req, res, next) => {
   console.log('here')

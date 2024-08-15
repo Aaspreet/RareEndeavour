@@ -8,7 +8,7 @@ import { emailValidationRules, passwordValidationRules } from "../../assets/othe
 import { auth } from "../../config/firebaseConfig";
 import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { useDispatch } from "react-redux";
-import { useLazyFetchUsernameQuery, userApi } from "../../redux/api/userApi";
+import { useLazyFetchUserQuery, userApi } from "../../redux/api/userApi";
 import ForgotPassword from "../../components/ForgotPassword";
 
 const UserAccess = () => {
@@ -27,7 +27,7 @@ const UserAccess = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [lazyFetchUsername, { data: usernameData }] = useLazyFetchUsernameQuery();
+  const [lazyFetchUser] = useLazyFetchUserQuery();
 
   const { colors } = tailwindConfig.theme.extend;
   const insets = useSafeAreaInsets();
@@ -96,10 +96,10 @@ const UserAccess = () => {
 
       if (!user.emailVerified) router.replace("verify-email");
 
-      await lazyFetchUsername()
+      await lazyFetchUser()
         .unwrap()
-        .then((response) => {
-          if (!response.username) {
+        .then((user) => {
+          if (!user.username) {
             return router.replace("select-username");
           } else {
             return router.replace("/");
@@ -220,7 +220,13 @@ const UserAccess = () => {
               {passwordError || "\n"}
             </Text>
             {mode == "login" && (
-              <Pressable className="ml-[16] pb-[4]" onPress={() => bottomSheetModalRef.current.present()}>
+              <Pressable
+                className="ml-[16] pb-[4]"
+                onPress={() => {
+                  Keyboard.dismiss();
+                  bottomSheetModalRef.current.present();
+                }}
+              >
                 <Text
                   className="text-secondaryText"
                   style={{
@@ -234,7 +240,7 @@ const UserAccess = () => {
             )}
           </View>
         </View>
-        <View className="items-center mt-[30]">
+        <View className="items-center mt-[20]">
           <Pressable
             className="flex-row items-center py-[4] px-[20]"
             onPress={mode == "login" ? handleLogin : handleRegister}
@@ -258,36 +264,39 @@ const UserAccess = () => {
           </Pressable>
         </View>
       </KeyboardAvoidingView>
-      <View className="items-center mb-[17] flex-row justify-center">
+      <View className="items-center">
         <Link
-          className="items-center py-[18] px-[4]"
+          className="items-center py-[12] px-[4] mb-[17] flex-row justify-center"
           href={{ pathname: "user-access", params: { mode: mode == "login" ? "register" : "login" } }}
           disabled={isLoading}
           replace
+          asChild
         >
-          <Text
-            className="text-center"
-            style={{
-              color: colors.mainRed,
-              fontSize: 15,
-              fontFamily: "p-bold",
-              lineHeight: 20,
-            }}
-          >
-            {mode == "login" ? "Sign Up" : "Login"}
-          </Text>
+          <Pressable className="flex-row">
+            <Text
+              className="text-center"
+              style={{
+                color: colors.mainRed,
+                fontSize: 15,
+                fontFamily: "p-bold",
+                lineHeight: 20,
+              }}
+            >
+              {mode == "login" ? "Sign Up" : "Login"}
+            </Text>
+            <Text
+              className="text-mainText text-center ml-[6]"
+              style={{
+                fontSize: 15,
+                fontFamily: "p-semibold",
+                lineHeight: 20,
+                textAlign: "center",
+              }}
+            >
+              instead.
+            </Text>
+          </Pressable>
         </Link>
-        <Text
-          className="text-mainText text-center"
-          style={{
-            fontSize: 15,
-            fontFamily: "p-semibold",
-            lineHeight: 20,
-            textAlign: "center",
-          }}
-        >
-          instead.
-        </Text>
       </View>
       <Pressable
         className="absolute right-0 mb-[20] mx-[20] px-[10] py-[10]"

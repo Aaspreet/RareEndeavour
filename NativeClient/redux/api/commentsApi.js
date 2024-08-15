@@ -12,7 +12,7 @@ export const commentsApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getComments: builder.mutation({
+    fetchComments: builder.mutation({
       query: (params) => ({ url: `fetch`, method: "POST", body: { ...params } }),
     }),
     createComment: builder.mutation({
@@ -22,7 +22,20 @@ export const commentsApi = createApi({
         body: { ...comment },
       }),
     }),
+    updateComment: builder.mutation({
+      query: (comment) => ({
+        url: `update`,
+        method: "POST",
+        body: { ...comment },
+      }),
+    }),
+    deleteComment: builder.mutation({
+      query: (commentId) => ({
+        url: `delete/${commentId}`,
+        method: "DELETE",
+      }),
+    }),
   }),
 });
 
-export const { useCreateCommentMutation, useGetCommentsMutation } = commentsApi;
+export const { useCreateCommentMutation, useFetchCommentsMutation } = commentsApi;

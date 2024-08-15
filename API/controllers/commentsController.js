@@ -1,5 +1,5 @@
-import errorHandler from "../middleware/error_handler.js";
-import { asyncQuery } from "../utils/async_query.js";
+import errorHandler from "../middleware/errorHandler.js";
+import { asyncQuery } from "../utils/asyncQuery.js";
 
 export const fetchComments = async (req, res, next) => {
   try {

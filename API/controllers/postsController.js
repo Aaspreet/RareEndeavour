@@ -1,11 +1,11 @@
-import errorHandler from "../middleware/error_handler.js";
-import { asyncQuery } from "../utils/async_query.js";
+import errorHandler from "../middleware/errorHandler.js";
+import { asyncQuery } from "../utils/asyncQuery.js";
 
 export const fetchPosts = async (req, res, next) => {
   try {
     const quantity = req.query.quantity || 10;
 
-    const {alreadyRenderedPostIds = []} = req.body
+    const { alreadyRenderedPostIds = [] } = req.body;
     console.log(alreadyRenderedPostIds + " logging from fetchPosts");
 
     const posts = await asyncQuery("SELECT * FROM POSTS WHERE post_id NOT IN (?) ORDER BY date_created DESC LIMIT ?", [
@@ -13,7 +13,7 @@ export const fetchPosts = async (req, res, next) => {
       quantity,
     ]);
 
-    return res.status(200).json({ success: true, posts });
+    return res.status(200).json(posts);
   } catch (error) {
     console.log(error);
     return next(errorHandler(500, error.message || "Internal Server Error While Fetching Posts"));
@@ -22,12 +22,13 @@ export const fetchPosts = async (req, res, next) => {
 
 export const fetchPost = async (req, res, next) => {
   try {
-    const post_id = req.params.post_id;
+    const postId = req.params.postId;
 
-    const post = await asyncQuery("SELECT * FROM posts WHERE id = ?", [post_id])
+    const post = await asyncQuery("SELECT * FROM posts WHERE id = ?", [postId]);
 
     if (post.length === 0) return next(errorHandler(404, "Post not found"));
-    return res.status(200).json({ success: true, post: post[0] });
+
+    return res.status(200).json(...post[0]);
   } catch (error) {
     console.log(error);
     return next(errorHandler(500, error.message || "Internal Server Error While Fetching Post"));

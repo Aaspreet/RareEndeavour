@@ -6,7 +6,7 @@ import { ArrowRight, Close, Retry } from "../../assets/icons";
 import { router } from "expo-router";
 import { auth } from "../../config/firebaseConfig";
 import { sendEmailVerification } from "firebase/auth";
-import { useLazyFetchUsernameQuery } from "../../redux/api/userApi";
+import { useLazyFetchUserQuery } from "../../redux/api/userApi";
 
 const VerifyEmail = () => {
   const [initialVerificationEmailState, setInitialVerificationEmailState] = useState("not sent");
@@ -20,7 +20,7 @@ const VerifyEmail = () => {
   const { colors } = tailwindConfig.theme.extend;
   const insets = useSafeAreaInsets();
 
-  const [lazyFetchUsername, { data: usernameData, error: usernameError }] = useLazyFetchUsernameQuery();
+  const [lazyFetchUser] = useLazyFetchUserQuery();
 
   const handleVerfiedEmailSubmit = async () => {
     setEmailVerificationError("");
@@ -58,17 +58,16 @@ const VerifyEmail = () => {
     const asyncUseEffect = async () => {
       if (auth.currentUser) {
         if (auth.currentUser?.emailVerified) {
-          await lazyFetchUsername()
+          await lazyFetchUser()
             .unwrap()
-            .then((response) => {
-              if (!response.username) {
+            .then((user) => {
+              if (!user.username) {
                 return router.replace("select-username");
               } else {
                 return router.replace("/");
               }
             })
             .catch((error) => {
-              console.log(error);
               return router.replace("select-username");
             });
           return;

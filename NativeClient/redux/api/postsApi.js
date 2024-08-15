@@ -12,24 +12,24 @@ export const postsApi = createApi({
     },
   }),
   endpoints: (builder) => ({
-    getPost: builder.query({
-      query: (postId) => `fetch_single/${postId}`,
+    fetchPost: builder.query({
+      query: (postId) => `get-single/${postId}`,
     }),
-    getPosts: builder.mutation({
-      query: (info) => ({ url: `fetch_multiple`, method: "POST", body: { ...info } }),
+    fetchPosts: builder.mutation({
+      query: (params) => ({ url: `fetch-multiple`, method: "POST", body: { ...params } }),
     }),
     createPost: builder.mutation({
-      query: (post) => ({
+      query: (params) => ({
         url: `create`,
         method: "POST",
-        body: { ...post },
+        body: { ...params },
       }),
     }),
     editPost: builder.mutation({
-      query: (post) => ({
+      query: (params) => ({
         url: `edit`,
         method: "POST",
-        body: { ...post },
+        body: { ...params },
       }),
     }),
     deletePost: builder.mutation({
@@ -42,10 +42,8 @@ export const postsApi = createApi({
 });
 
 export const {
-  useGetPostQuery,
-  useLazyGetPostQuery,
-  useGetPostsMutation,
+  useFetchPostQuery,
+  useLazyFetchPostQuery,
+  useFetchPostsMutation,
   useCreatePostMutation,
-  useEditPostMutation,
-  useDeletePostMutation,
 } = postsApi;

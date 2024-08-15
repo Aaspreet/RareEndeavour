@@ -8,39 +8,27 @@ export const userApi = createApi({
     prepareHeaders: async (headers) => {
       const token = await auth.currentUser.getIdToken(true);
       headers.set("Authorization", `Bearer ${token}`);
-      // headers.set("Cache-Control", "no-cache");
+      headers.set("Cache-Control", "no-cache");
     },
   }),
   tagTypes: ["user"],
   endpoints: (builder) => ({
-    fetchUsername: builder.query({
-      query: () => `get_username`,
-      providesTags: ["user"],
-
-    }),
-    getProfilePicture: builder.query({
-      query: () => `get_profile_picture`,
+    fetchUser: builder.query({
+      query: () => `@me`,
       providesTags: ["user"],
     }),
-    getTimestamp: builder.query({
-      query: () => `get_date_created`,
-      providesTags: ["user"],
+    fetchTargetUser: builder.query({
+      query: (params) => `${params.uid}`,
     }),
-    updateProfilePicture: builder.mutation({
-      query: ({profilePicture}) => ({
-        url: `update_profile_picture`,
+    updateQuote: builder.mutation({
+      query: (params) => ({
+        url: `update-quote`,
         method: "POST",
-        body: { profilePicture },
+        body: { ...params },
       }),
       invalidatesTags: ["user"],
     }),
   }),
 });
 
-export const {
-  useFetchUsernameQuery,
-  useLazyFetchUsernameQuery,
-  useGetProfilePictureQuery,
-  useGetTimestampQuery,
-  useUpdateProfilePictureMutation,
-} = userApi;
+export const { useFetchUserQuery, useLazyFetchUserQuery } = userApi;

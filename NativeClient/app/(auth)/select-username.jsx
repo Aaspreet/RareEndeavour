@@ -15,31 +15,30 @@ const SelectUsername = () => {
 
   const [usernameError, setUsernameError] = useState("");
 
-  const [registerTrigger, { data: queryData, error: queryError }] = useRegisterMutation();
+  const [registerTrigger] = useRegisterMutation();
 
   const { colors } = tailwindConfig.theme.extend;
   const insets = useSafeAreaInsets();
 
   const handleSubmit = async () => {
+    setIsLoading(true);
+    setUsernameError("");
+
     for (const rule of usernameValidationRules) {
       if (!rule.rule(usernameValue)) {
         setUsernameError(rule.message);
-        return;
+        return setIsLoading(false);
       }
     }
 
-    registerTrigger({ username: usernameValue });
+    await registerTrigger({ username: usernameValue })
+      .unwrap()
+      .then(() => router.push("/"))
+      .catch((error) => {
+        setUsernameError(error.data?.message);
+      });
+    setIsLoading(false);
   };
-
-  useEffect(() => {
-    if (queryError) {
-      setUsernameError(queryError.data?.message);
-    }
-
-    if (queryData) {
-      router.push("/");
-    }
-  }, [queryError, queryData]);
 
   useEffect(() => {
     if (auth.currentUser) {

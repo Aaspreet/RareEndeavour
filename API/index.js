@@ -1,11 +1,11 @@
 import express from "express";
 import http from "http";
 import cors from "cors";
-import authRouter from "./routes/auth_router.js";
-import userRouter from "./routes/user_router.js";
-import postsRouter from "./routes/posts_router.js";
-import commentsRouter from "./routes/comments_router.js";
-import admin from "./config/fb_admin.js";
+import authRouter from "./routes/authRouter.js";
+import userRouter from "./routes/userRouter.js";
+import postsRouter from "./routes/postsRouter.js";
+import commentsRouter from "./routes/commentsRouter.js";
+import admin from "./config/fbAdmin.js";
 
 const app = express();
 

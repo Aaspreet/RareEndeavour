@@ -23,7 +23,7 @@ export const authApi = createApi({
       },
       onQueryStarted: async (arg, { dispatch, queryFulfilled }) => {
         try {
-          const { data } = await queryFulfilled;
+          await queryFulfilled;
           dispatch(userApi.util.invalidateTags(["user"]));
         } catch (error) {
           console.log(error);

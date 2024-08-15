@@ -1,6 +1,6 @@
 import { Router } from "express";
-import { createComment, deleteComment, editComment, fetchComments } from "../controllers/comments_controller.js";
-import { verifyTokenOptional, verifyTokenRequired } from "../middleware/verify_token.js";
+import { createComment, deleteComment, editComment, fetchComments } from "../controllers/commentsController.js";
+import { verifyTokenOptional, verifyTokenRequired } from "../middleware/verifyToken.js";
 
 
 const router = Router();
