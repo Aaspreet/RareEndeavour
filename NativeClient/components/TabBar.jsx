@@ -31,7 +31,7 @@ const TabBar = ({ state, ...rest }) => {
 
   const routesRequiringAuth = ["create", "chat", "inbox"];
 
-  const routesWithAnimatedTabBar = ["index", "grid"];
+  const routesWithAnimatedTabBar = ["index", "grid", "chat"];
   const allowAnimatedTabBar = routesWithAnimatedTabBar.includes(state.routes[state.index].name);
 
   const { authPromptModalRef } = useContext(AuthPromptModalContext);

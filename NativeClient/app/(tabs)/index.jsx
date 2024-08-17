@@ -8,6 +8,7 @@ import { FontAwesome, Ionicons, MaterialCommunityIcons, Octicons } from "react-n
 import { useLazyFetchPostsQuery } from "../../redux/api/postsApi";
 import tailwindConfig from "../../tailwind.config";
 import { ScrollingDownContext } from "../../components/contexts";
+import PostFeed from "../../components/Feeds/PostFeed";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
@@ -38,7 +39,7 @@ const Home = () => {
       .then((response) => {
         // console.log(response);
         if (response.length === 0) return setError("No more posts...");
-        console.log(posts.length);
+        // console.log(posts.length);
         setPosts([...posts, ...response]);
       })
       .catch((error) => {
@@ -66,122 +67,6 @@ const Home = () => {
     previousScrollOffset.current = currentOffset;
   };
 
-  useEffect(() => {
-    // fetchPosts();
-    // if (fetchPostsIsFetching) console.log("fetching posts");
-  }, [fetchPostsIsFetching]);
-
-  const Feed = memo(({ item }) => {
-    return (
-      <View className="pt-[30] pb-[25] px-[9] bg-primary rounded-lg">
-        {/* {console.log("rendering", item.id.toString())} */}
-        <View className="pb-[28] flex-row justify-between">
-          <View className="">
-            <Pressable className="px-[6]">
-              <Text
-                className="text-mainText"
-                style={{
-                  fontSize: 15,
-                  fontFamily: "p-regular",
-                }}
-              >
-                {item.username}
-              </Text>
-            </Pressable>
-            <Text
-              className="text-secondaryText pl-[6]"
-              style={{
-                fontSize: 12,
-                fontFamily: "p-regular",
-              }}
-            >
-              {item.timestamp}
-            </Text>
-          </View>
-          <View className="flex-row items-center">
-            {/* <Text
-                  className="mr-[12]"
-                  style={{
-                    fontSize: 14,
-                    fontFamily: "p-semibold",
-                    color: "white",
-                  }}
-                >
-                  5 min read
-                </Text> */}
-            <Pressable className="py-[4] px-[6] mt-[4]">
-              <Octicons name="kebab-horizontal" size={16} color={"white"} />
-            </Pressable>
-          </View>
-        </View>
-        {/* <View className="flex-row">
-          {item.tags.map((tag) => {
-            return (
-              <View className="px-[6] py-[2]" key={tag}>
-                <Text
-                  className="text-secondaryText"
-                  style={{
-                    fontSize: 15,
-                    fontFamily: "p-regular",
-                  }}
-                >
-                  # {tag}
-                </Text>
-              </View>
-            );
-          })}
-        </View> */}
-        <View className="mt-[12] pl-[6]">
-          <Text
-            className="text-mainText "
-            style={{
-              fontSize: 25,
-              // lineHeight: "50%",
-              lineHeight: 37,
-              fontFamily: "p-bold",
-            }}
-          >
-            {item.title}
-          </Text>
-        </View>
-        <View className="flex-row mt-[36] justify-between mr-[10] ml-[3]">
-          <Pressable className="px-[6] py-[4] flex-row items-center">
-            <View className="transform scale-x-[-1] mr-[10]">
-              <Ionicons name="chatbubble-outline" size="18" color="white" />
-            </View>
-            <Text
-              className="text-thirdText"
-              style={{
-                fontSize: 13,
-                fontFamily: "p-regular",
-              }}
-            >
-              Add comment
-            </Text>
-          </Pressable>
-          <View>
-            <View className="flex-row items-center">
-              <Pressable className="px-[6] py-[6]">
-                <Ionicons name="triangle-outline" size="16" color="white" />
-              </Pressable>
-              <Text
-                className="text-mainText"
-                style={{
-                  fontSize: 15,
-                  fontFamily: "p-regular",
-                }}
-              >
-                {item.vote_count}
-              </Text>
-              <Pressable className="transform scale-y-[-1] px-[6] py-[6]">
-                <Ionicons name="triangle-outline" size="16" color="white" />
-              </Pressable>
-            </View>
-          </View>
-        </View>
-      </View>
-    );
-  });
 
   return (
     <SafeAreaView className="flex-1 bg-secondary" edges={["left", "right", "bottom"]}>
@@ -189,7 +74,7 @@ const Home = () => {
         data={posts}
         contentContainerStyle={{ paddingTop: insets.top, rowGap: 35 }}
         onEndReached={() => {
-          console.log("end reachd");
+          // console.log("end reachd");
           fetchPosts();
         }}
         onEndReachedThreshold={0.5}
@@ -231,7 +116,7 @@ const Home = () => {
         }
         keyExtractor={(item) => item.id}
         onScroll={handleScroll}
-        renderItem={({ item }) => <Feed item={item} />}
+        renderItem={({ item }) => <PostFeed item={item} />}
       />
       <StatusBar barStyle={"light-content"} />
     </SafeAreaView>

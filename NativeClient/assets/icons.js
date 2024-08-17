@@ -1,4 +1,7 @@
+import { triangle } from "polished";
 import { Path, Svg } from "react-native-svg";
+
+//All icons are from Phosphor Icons. They are bold unless otherwise specified.
 
 export const HomeOutline = ({ height, width = height, colour }) => {
   return (
@@ -80,7 +83,6 @@ export const ArrowRight = ({ height, width = height, colour }) => {
   );
 };
 
-
 export const Close = ({ height, width = height, colour }) => {
   return (
     <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
@@ -93,6 +95,31 @@ export const Retry = ({ height, width = height, colour }) => {
   return (
     <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
       <Path d="M244,56v48a12,12,0,0,1-12,12H184a12,12,0,1,1,0-24H201.1l-19-17.38c-.13-.12-.26-.24-.38-.37A76,76,0,1,0,127,204h1a75.53,75.53,0,0,0,52.15-20.72,12,12,0,0,1,16.49,17.45A99.45,99.45,0,0,1,128,228h-1.37A100,100,0,1,1,198.51,57.06L220,76.72V56a12,12,0,0,1,24,0Z"></Path>
+    </Svg>
+  );
+};
+export const Dotdotdot = ({ height, width = height, colour }) => {
+  return (
+    <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
+      <Path d="M156,128a28,28,0,1,1-28-28A28,28,0,0,1,156,128ZM48,100a28,28,0,1,0,28,28A28,28,0,0,0,48,100Zm160,0a28,28,0,1,0,28,28A28,28,0,0,0,208,100Z"></Path>
+    </Svg>
+  );
+};
+//
+//regular
+export const Comment = ({ height, width = height, colour }) => {
+  return (
+    <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
+      <Path d="M128,24A104,104,0,0,0,36.18,176.88L24.83,210.93a16,16,0,0,0,20.24,20.24l34.05-11.35A104,104,0,1,0,128,24Zm0,192a87.87,87.87,0,0,1-44.06-11.81,8,8,0,0,0-6.54-.67L40,216,52.47,178.6a8,8,0,0,0-.66-6.54A88,88,0,1,1,128,216Z"></Path>
+    </Svg>
+  );
+};
+//
+//regular
+export const Triangle = ({ height, width = height, colour }) => {
+  return (
+    <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
+      <Path d="M236.8,188.09,149.35,36.22a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.34,24.34,0,0,0,40.55,224h174.9a24.34,24.34,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM222.93,203.8a8.5,8.5,0,0,1-7.48,4.2H40.55a8.5,8.5,0,0,1-7.48-4.2,7.59,7.59,0,0,1,0-7.72L120.52,44.21a8.75,8.75,0,0,1,15,0l87.45,151.87A7.59,7.59,0,0,1,222.93,203.8Z"></Path>
     </Svg>
   );
 };
