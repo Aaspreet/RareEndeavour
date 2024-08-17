@@ -5,8 +5,8 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { auth } from "../../config/firebaseConfig";
 import { BlurView } from "expo-blur";
 import Animated, { useSharedValue, withSpring, withTiming } from "react-native-reanimated";
-import { HomeFeedContext } from "../../components/contexts/HomeFeedContext";
 import { Link } from "expo-router";
+import { ScrollingDownContext } from "../../components/contexts";
 
 const Grid = () => {
   const [layoutComplete, setLayoutComplete] = useState(false);
@@ -28,7 +28,7 @@ const Grid = () => {
 
   const minimizedProfileHeaderHeight = 100;
 
-  const { scrollingDown, setScrollingDown } = useContext(HomeFeedContext);
+  const { scrollingDown, setScrollingDown } = useContext(ScrollingDownContext);
 
   const handleScroll = (e) => {
     const currentOffset = e.nativeEvent.contentOffset.y;

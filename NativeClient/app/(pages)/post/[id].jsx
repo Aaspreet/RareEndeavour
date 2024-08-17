@@ -5,8 +5,8 @@ import { FontAwesome, Ionicons, MaterialCommunityIcons } from "react-native-vect
 import { router, useLocalSearchParams } from "expo-router";
 import { postsApi, useLazyGetPostQuery } from "../../../redux/api/postsApi";
 import { useDispatch } from "react-redux";
-import AddComment from "../../../components/AddComment";
 import { useGetCommentsMutation } from "../../../redux/api/commentsApi";
+import AddComment from "../../../components/other/AddComment";
 
 const PostPage = () => {
   const { id } = useLocalSearchParams();

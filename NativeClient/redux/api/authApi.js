@@ -8,7 +8,7 @@ export const authApi = createApi({
     baseUrl: `${process.env.EXPO_PUBLIC_API_URL}/api/auth`,
     prepareHeaders: async (headers) => {
       const token = await auth.currentUser.getIdToken(true);
-      headers.set("Authorization", `Bearer ${token}`);
+      if (token) headers.set("Authorization", `Bearer ${token}`);
       // headers.set("Cache-Control", "no-cache");
     },
   }),

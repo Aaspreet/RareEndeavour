@@ -7,8 +7,8 @@ export const userApi = createApi({
     baseUrl: `${process.env.EXPO_PUBLIC_API_URL}/api/user`,
     prepareHeaders: async (headers) => {
       const token = await auth.currentUser.getIdToken(true);
-      headers.set("Authorization", `Bearer ${token}`);
-      headers.set("Cache-Control", "no-cache");
+      if (token) headers.set("Authorization", `Bearer ${token}`);
+      // headers.set("Cache-Control", "no-cache");
     },
   }),
   tagTypes: ["user"],

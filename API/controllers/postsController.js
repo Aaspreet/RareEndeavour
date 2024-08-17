@@ -3,15 +3,21 @@ import { asyncQuery } from "../utils/asyncQuery.js";
 
 export const fetchPosts = async (req, res, next) => {
   try {
-    const quantity = req.query.quantity || 10;
+    const limit = Number(req.params.limit) || 10;
 
-    const { alreadyRenderedPostIds = [] } = req.body;
-    console.log(alreadyRenderedPostIds + " logging from fetchPosts");
+    console.log("fetching posts");
+    const voteCountQuery = `(SELECT COUNT(*) FROM post_votes pv WHERE pv.post_id = p.id AND pv.vote_type = 'upvote') - (SELECT COUNT(*) FROM post_votes pv WHERE pv.post_id = p.id AND pv.vote_type = 'downvote') AS vote_count`;
+    const tagsQuery = `(SELECT JSON_ARRAYAGG(t.name) FROM post_tags pt JOIN tags t ON pt.tag_id = t.id WHERE pt.post_id = p.id) AS tags`;
 
-    const posts = await asyncQuery("SELECT * FROM POSTS WHERE post_id NOT IN (?) ORDER BY date_created DESC LIMIT ?", [
-      alreadyRenderedPostIds,
-      quantity,
-    ]);
+    const posts = await asyncQuery(
+      `SELECT p.id, p.title, p.timestamp, u.username AS username, u.uid as user_id, ${voteCountQuery}, ${tagsQuery} FROM posts p JOIN users u ON p.user_id = u.uid ORDER BY p.timestamp DESC LIMIT ?`,
+      [limit]
+    );
+
+    posts.forEach((post) => {
+      post.id = Math.random();
+    });
+
 
     return res.status(200).json(posts);
   } catch (error) {
@@ -28,7 +34,7 @@ export const fetchPost = async (req, res, next) => {
 
     if (post.length === 0) return next(errorHandler(404, "Post not found"));
 
-    return res.status(200).json(...post[0]);
+    return res.status(200).json(post[0]);
   } catch (error) {
     console.log(error);
     return next(errorHandler(500, error.message || "Internal Server Error While Fetching Post"));

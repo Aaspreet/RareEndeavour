@@ -2,7 +2,7 @@ import admin from "../config/fbAdmin.js";
 import errorHandler from "./errorHandler.js";
 
 const verifyTokenRequired = async (req, res, next) => {
-  console.log('here')
+  console.log("here");
   if (!req.headers.authorization) return next(errorHandler(401, "No token provided"));
   const token = req.headers.authorization.split("Bearer ")[1];
 

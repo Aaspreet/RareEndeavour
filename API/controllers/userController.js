@@ -16,10 +16,10 @@ export const fetchUser = async (req, res, next) => {
 
 export const fetchTargetUser = async (req, res, next) => {
   try {
-    const username = req.params.username;
+    const uid = req.params.uid;
 
-    const fetchedUser = await asyncQuery("SELECT uid, username, timestamp, quote FROM users WHERE username = ?", [
-      username,
+    const fetchedUser = await asyncQuery("SELECT uid, username, timestamp, quote FROM users WHERE uid = ?", [
+      uid,
     ]);
 
     if (fetchedUser.length === 0) return next(errorHandler(404, "User not found"));

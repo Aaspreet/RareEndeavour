@@ -1,13 +1,13 @@
 import { View, Text, Pressable, Keyboard } from "react-native";
 import React, { forwardRef, useEffect, useState } from "react";
 import { BottomSheetModal, BottomSheetTextInput, BottomSheetView } from "@gorhom/bottom-sheet";
-import tailwindConfig from "../tailwind.config";
-import { ArrowRight } from "../assets/icons";
-import { auth } from "../config/firebaseConfig";
+import tailwindConfig from "../../tailwind.config";
+import { ArrowRight } from "../../assets/icons";
+import { auth } from "../../config/firebaseConfig";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-const ForgotPassword = forwardRef(({}, ref) => {
+const ForgotPasswordModal = forwardRef(({}, ref) => {
   const [emailValue, setEmailValue] = useState("");
   const [emailError, setEmailError] = useState("");
 
@@ -182,4 +182,4 @@ const ForgotPassword = forwardRef(({}, ref) => {
   );
 });
 
-export default ForgotPassword;
+export default ForgotPasswordModal;

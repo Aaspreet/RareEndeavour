@@ -9,14 +9,14 @@ import { auth } from "../../config/firebaseConfig";
 import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail, signInWithEmailAndPassword } from "firebase/auth";
 import { useDispatch } from "react-redux";
 import { useLazyFetchUserQuery, userApi } from "../../redux/api/userApi";
-import ForgotPassword from "../../components/ForgotPassword";
+import ForgotPasswordModal from "../../components/modals/ForgotPasswordModal";
 
 const UserAccess = () => {
   const { mode } = useLocalSearchParams();
 
   const emailRef = useRef();
   const passwordRef = useRef();
-  const bottomSheetModalRef = useRef(null);
+  const forgotPasswordModalRef = useRef(null);
 
   const [emailValue, setEmailValue] = useState("");
   const [passwordValue, setPasswordValue] = useState("");
@@ -224,7 +224,7 @@ const UserAccess = () => {
                 className="ml-[16] pb-[4]"
                 onPress={() => {
                   Keyboard.dismiss();
-                  bottomSheetModalRef.current.present();
+                  forgotPasswordModalRef.current.present();
                 }}
               >
                 <Text
@@ -305,7 +305,7 @@ const UserAccess = () => {
       >
         <Close colour={colors.mainText} height={27} />
       </Pressable>
-      <ForgotPassword ref={bottomSheetModalRef}></ForgotPassword>
+      <ForgotPasswordModal ref={forgotPasswordModalRef} />
     </SafeAreaView>
   );
 };

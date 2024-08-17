@@ -6,10 +6,8 @@ import { AuthModalContext } from "../_layout";
 
 const Chat = () => {
   const modalRef = useRef(null);
-  const { presentAuthModal } = useContext(AuthModalContext);
 
   const handlePress = () => {
-    presentAuthModal();
   };
 
   return (

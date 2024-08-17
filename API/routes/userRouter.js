@@ -5,7 +5,7 @@ import { fetchTargetUser, fetchUser, updateQuote } from "../controllers/userCont
 const router = Router();
 
 router.get("/@me", verifyTokenRequired, fetchUser);
-router.get("/:username", fetchTargetUser);
+router.get("/:uid", fetchTargetUser);
 
 router.post("/update-quote", verifyTokenRequired, updateQuote);
 

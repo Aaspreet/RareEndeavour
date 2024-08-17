@@ -6,8 +6,8 @@ export const postsApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.EXPO_PUBLIC_API_URL}/api/posts`,
     prepareHeaders: async (headers) => {
-      const token = await auth.currentUser.getIdToken(true);
-      headers.set("Authorization", `Bearer ${token}`);
+      const token = await auth.currentUser?.getIdToken(true);
+      if (token) headers.set("Authorization", `Bearer ${token}`);
       // headers.set("Cache-Control", "no-cache");
     },
   }),
@@ -15,8 +15,8 @@ export const postsApi = createApi({
     fetchPost: builder.query({
       query: (postId) => `get-single/${postId}`,
     }),
-    fetchPosts: builder.mutation({
-      query: (params) => ({ url: `fetch-multiple`, method: "POST", body: { ...params } }),
+    fetchPosts: builder.query({
+      query: (limit) => `fetch/${limit}`,
     }),
     createPost: builder.mutation({
       query: (params) => ({
@@ -44,6 +44,7 @@ export const postsApi = createApi({
 export const {
   useFetchPostQuery,
   useLazyFetchPostQuery,
-  useFetchPostsMutation,
+  useFetchPostsQuery,
+  useLazyFetchPostsQuery,
   useCreatePostMutation,
 } = postsApi;
