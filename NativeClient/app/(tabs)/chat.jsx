@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { View, PanResponder, Text, Pressable } from "react-native";
 import { FlatList, Gesture, GestureDetector, ScrollView } from "react-native-gesture-handler";
-import Animated, { useSharedValue } from "react-native-reanimated";
+import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import PostFeed from "../../components/Feeds/PostFeed";
 import { useLazyFetchPostsQuery } from "../../redux/api/postsApi";
@@ -9,39 +9,16 @@ import tailwindConfig from "../../tailwind.config";
 import { usePathname } from "expo-router";
 
 const DraggableHeightView = () => {
-  // const reference = useRef(null);
-
-  // const height = useSharedValue(400);
-  // const prevTranslationY = useSharedValue(0);
-
-  // const pan = Gesture.Pan()
-  //   .onStart(() => {})
-  //   .onUpdate(({ translationY }) => {
-  //     const diff = translationY - prevTranslationY.value;
-  //     height.value = height.value + diff;
-  //     prevTranslationY.value = translationY;
-  //   })
-  //   .onEnd(() => {
-  //     prevTranslationY.value = 0;
-  //   });
-
-  // const handleScroll = (e) => {
-  //   // e.scrollTo({ y: 0 });
-  //   reference.current?.scrollTo({ y: 0 });
-  //   const currentOffset = e.nativeEvent.contentOffset.y;
-  //   // console.log(currentOffset);
-  //   // console.log(e);
-  //   // console.log(e.nativeEvent.contentOffset.y);
-  // };
-
-  const [initialNameViewHeight, setInitialNameViewHeight] = useState(null);
   const [initialRootViewHeight, setInitialRootViewHeight] = useState(null);
   const initialNameViewPadding = 50;
 
-  const rootViewHeight = useSharedValue(400);
-  const nameViewPadding = useSharedValue(50);
+  const rootViewHeight = useSharedValue(null);
+  const nameViewPadding = useSharedValue(initialNameViewPadding);
 
-  const prevTranslationY = useSharedValue(0);
+  const [nameViewMinimumHeight, setNameViewMinimumHeight] = useState(null);
+
+  const [feedSelection, setFeedSelection] = useState("posts");
+  const [feedState, setFeedState] = useState("colapsed");
 
   const [posts, setPosts] = useState([]);
 
@@ -62,13 +39,15 @@ const DraggableHeightView = () => {
   ] = useLazyFetchPostsQuery();
 
   const fetchPosts = () => {
+    // console.log('called two')
     if (fetchPostsIsFetching) return;
-    lazyFetchPosts({ limit: 20 })
+    console.log("a");
+
+    lazyFetchPosts({ limit: '3' })
       .unwrap()
       .then((response) => {
-        console.log("abc");
-        // console.log(response);
-        if (response.length === 0) return setError("No more posts...");
+        console.log(response.length);
+        if (!response) return setError("No more posts...");
         setPosts([...posts, ...response]);
       })
       .catch((error) => {
@@ -76,49 +55,22 @@ const DraggableHeightView = () => {
       });
   };
 
-  const pan = Gesture.Pan()
-    .onStart(() => {})
-    .onUpdate(({ translationY }) => {
-      const diff = translationY - prevTranslationY.value;
-      // console.log(diff);
+  const handleScroll = (e) => {
+    const currentOffset = e.nativeEvent.contentOffset.y;
+    if (currentOffset < 10) {
+      if (feedState == "collapsed") return;
+      rootViewHeight.value = withTiming(initialRootViewHeight, { duration: 650 });
+      nameViewPadding.value = withTiming(initialNameViewPadding, { duration: 650 });
+      setFeedState("collapsed");
+    }
 
-      if (diff < 0) {
-        if (rootViewHeight.value == initialNameViewHeight && nameViewPadding.value > 0) {
-          if (nameViewPadding.value + diff < 0) {
-            nameViewPadding.value = 0;
-          } else {
-            nameViewPadding.value = nameViewPadding.value + diff;
-          }
-        }
-
-        if (rootViewHeight.value + diff < initialNameViewHeight) {
-          rootViewHeight.value = initialNameViewHeight;
-        } else {
-          rootViewHeight.value = rootViewHeight.value + diff;
-        }
-      } else {
-        if (nameViewPadding.value < initialNameViewPadding) {
-          if (nameViewPadding.value + diff > initialNameViewPadding) {
-            nameViewPadding.value = initialNameViewPadding;
-          } else {
-            nameViewPadding.value = nameViewPadding.value + diff;
-          }
-        }
-        if (nameViewPadding.value == initialNameViewPadding && rootViewHeight.value < initialRootViewHeight) {
-          console.log("here");
-          if (rootViewHeight.value + diff > initialRootViewHeight) {
-            rootViewHeight.value = initialRootViewHeight;
-          } else {
-            rootViewHeight.value = rootViewHeight.value + diff;
-          }
-        }
-      }
-
-      prevTranslationY.value = translationY;
-    })
-    .onEnd(() => {
-      prevTranslationY.value = 0;
-    });
+    if (currentOffset >= 10) {
+      if (feedState == "expanded") return;
+      rootViewHeight.value = withTiming(nameViewMinimumHeight, { duration: 650 });
+      nameViewPadding.value = withTiming(0, { duration: 650 });
+      setFeedState("expanded");
+    }
+  };
 
   useEffect(() => {
     fetchPosts();
@@ -127,7 +79,7 @@ const DraggableHeightView = () => {
   return (
     <SafeAreaView className="flex-1" edges={["left", "right", "bottom"]}>
       <Animated.View
-        className="bg-blue-500 justify-start"
+        className="justify-start overflow-hidden"
         onLayout={(e) => {
           if (initialRootViewHeight) return;
           setInitialRootViewHeight(e.nativeEvent.layout.height);
@@ -135,15 +87,11 @@ const DraggableHeightView = () => {
         }}
         style={{ height: rootViewHeight || "auto" }}
       >
-        {/* <View className="bg-red-500 w-52 h-52"></View> */}
         <Animated.View
-          className="bg-red-500"
-          onLayout={(e) => {
-            if (initialNameViewHeight) return;
-            setInitialNameViewHeight(e.nativeEvent.layout.height);
-          }}
+          className=""
           style={{
             paddingTop: nameViewPadding,
+            minHeight: "auto",
           }}
         >
           <Text
@@ -152,11 +100,15 @@ const DraggableHeightView = () => {
               fontFamily: "pd-semibold",
               fontSize: 24,
             }}
+            onLayout={(e) => {
+              if (nameViewMinimumHeight) return;
+              setNameViewMinimumHeight(e.nativeEvent.layout.height);
+            }}
           >
             RareDestroyer8
           </Text>
         </Animated.View>
-        <View className="bg-green-500 justify-between mt-[10] mb-[15] ">
+        <View className="justify-between mt-[10] mb-[15] ">
           <Text
             className="text-center text-secondaryText"
             style={{
@@ -179,7 +131,7 @@ const DraggableHeightView = () => {
           </Pressable>
         </View>
       </Animated.View>
-      <View className="bg-yellow-500 flex-row justify-between">
+      <View className="flex-row justify-between">
         <Pressable className="flex-1 py-[4]">
           <Text
             className="text-center"
@@ -217,21 +169,41 @@ const DraggableHeightView = () => {
           </Text>
         </Pressable>
       </View>
-      <GestureDetector gesture={pan}>
-        <FlatList
-          data={posts}
-          contentContainerStyle={{ rowGap: 35, backgroundColor: "red", flex: 1 }}
-          onEndReached={() => {
-            console.log("end reachd");
-            fetchPosts();
-          }}
-          onEndReachedThreshold={0.5}
-          keyExtractor={(item) => item.id}
-          // onScroll={handleScroll}
-          renderItem={({ item, index }) => <PostFeed item={item} index={index} />}
-          scrollEnabled={false}
-        />
-      </GestureDetector>
+      <FlatList
+        data={posts}
+        contentContainerStyle={{ rowGap: 35 }}
+        ListFooterComponent={
+          <View
+            className=""
+            style={{
+              marginBottom: insets.bottom + 25,
+            }}
+          >
+            <Text
+              className=""
+              style={{
+                color: error ? colors.mainRed : colors.mainText,
+                fontSize: 16,
+                fontFamily: "p-semibold",
+                textAlign: "center",
+                letterSpacing: 1.25,
+              }}
+            >
+              {error || "Fetching posts..."}
+            </Text>
+          </View>
+        }
+        onEndReached={() => {
+          console.log("end reachd");
+          fetchPosts();
+        }}
+        onEndReachedThreshold={0.5}
+        keyExtractor={(item) => item.id}
+        onScroll={handleScroll}
+        bounces={false}
+        top
+        renderItem={({ item, index }) => <PostFeed item={item} index={index} />}
+      />
     </SafeAreaView>
   );
 };

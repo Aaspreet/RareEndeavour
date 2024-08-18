@@ -15,7 +15,7 @@ const Layout = () => {
   useEffect(() => {
     setTimeout(() => {
       // router.push({ pathname: "user-access", params: { mode: "login" } });
-      router.push("chat")
+      // router.push("chat")
       // authPromptModalRef.current?.present();
     }, 400);
   }, []);

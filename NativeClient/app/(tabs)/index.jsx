@@ -5,7 +5,7 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useDispatch, useSelector } from "react-redux";
 import { auth } from "../../config/firebaseConfig";
 import { FontAwesome, Ionicons, MaterialCommunityIcons, Octicons } from "react-native-vector-icons";
-import { useLazyFetchPostsQuery } from "../../redux/api/postsApi";
+import { postsApi, useLazyFetchPostsQuery } from "../../redux/api/postsApi";
 import tailwindConfig from "../../tailwind.config";
 import { ScrollingDownContext } from "../../components/contexts";
 import PostFeed from "../../components/Feeds/PostFeed";
@@ -33,16 +33,22 @@ const Home = () => {
   const { colors } = tailwindConfig.theme.extend;
 
   const fetchPosts = () => {
+    console.log("called");
+
     if (fetchPostsIsFetching) return;
-    lazyFetchPosts({ limit: 20 })
+    lazyFetchPosts()
       .unwrap()
       .then((response) => {
-        // console.log(response);
-        if (response.length === 0) return setError("No more posts...");
+        console.log(response);
+        console.log('response above')
+
+        
+        if (!response) return setError("No more posts...");
         // console.log(posts.length);
         setPosts([...posts, ...response]);
       })
       .catch((error) => {
+        console.log(error);
         setError("Error fetching posts");
       });
   };
@@ -67,6 +73,9 @@ const Home = () => {
     previousScrollOffset.current = currentOffset;
   };
 
+  useEffect(() => {
+    fetchPosts();
+  }, []);
 
   return (
     <SafeAreaView className="flex-1 bg-secondary" edges={["left", "right", "bottom"]}>
@@ -74,7 +83,7 @@ const Home = () => {
         data={posts}
         contentContainerStyle={{ paddingTop: insets.top, rowGap: 35 }}
         onEndReached={() => {
-          // console.log("end reachd");
+          console.log("end reachd home");
           fetchPosts();
         }}
         onEndReachedThreshold={0.5}

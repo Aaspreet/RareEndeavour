@@ -3,6 +3,7 @@ import { asyncQuery } from "../utils/asyncQuery.js";
 
 export const fetchPosts = async (req, res, next) => {
   try {
+    console.log('fetching posts');
     const limit = Number(req.params.limit) || 10;
 
     console.log("fetching posts");
