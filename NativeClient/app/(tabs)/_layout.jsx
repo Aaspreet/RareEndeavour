@@ -5,7 +5,7 @@ import TabBar from "../../components/TabBar";
 import Header from "../../components/Header";
 import { auth } from "../../config/firebaseConfig";
 import { onAuthStateChanged } from "firebase/auth";
-import { AuthPromptModalContext } from "../../components/contexts";
+import { AuthPromptModalContext } from "../../utils/contexts";
 
 const Layout = () => {
   const rootNavigationState = useRootNavigationState();
@@ -13,10 +13,11 @@ const Layout = () => {
   const { authPromptModalRef } = useContext(AuthPromptModalContext);
 
   useEffect(() => {
-    setTimeout(() => {
+    setTimeout(async () => {
       // router.push({ pathname: "user-access", params: { mode: "login" } });
-      // router.push("chat")
+      router.push("post/32")
       // authPromptModalRef.current?.present();
+      auth.signOut();
     }, 400);
   }, []);
 
@@ -27,8 +28,8 @@ const Layout = () => {
       tabBar={(props) => <TabBar {...props} />}
     >
       <Tabs.Screen name="index" options={{ headerShown: false }} />
-      <Tabs.Screen name="grid" options={{ headerShown: false }} />
-      <Tabs.Screen name="chat" />
+      <Tabs.Screen name="profile" options={{ headerShown: false }} />
+      <Tabs.Screen name="chat" options={{ headerShown: false }} />
       <Tabs.Screen name="inbox" />
     </Tabs>
   );

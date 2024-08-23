@@ -19,18 +19,18 @@ export const HomeFill = ({ height, width = height, colour }) => {
   );
 };
 
-export const GridOutline = ({ height, width = height, colour }) => {
+export const ProfileOutline = ({ height, width = height, colour }) => {
   return (
     <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
-      <Path d="M100,36H56A20,20,0,0,0,36,56v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,100,36ZM96,96H60V60H96ZM200,36H156a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V56A20,20,0,0,0,200,36Zm-4,60H160V60h36Zm-96,40H56a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V156A20,20,0,0,0,100,136Zm-4,60H60V160H96Zm104-60H156a20,20,0,0,0-20,20v44a20,20,0,0,0,20,20h44a20,20,0,0,0,20-20V156A20,20,0,0,0,200,136Zm-4,60H160V160h36Z"></Path>
+      <Path d="M208,20H72A36,36,0,0,0,36,56V224a12,12,0,0,0,12,12H192a12,12,0,0,0,0-24H60v-4a12,12,0,0,1,12-12H208a12,12,0,0,0,12-12V32A12,12,0,0,0,208,20ZM196,172H72a35.59,35.59,0,0,0-12,2.06V56A12,12,0,0,1,72,44H196Z"></Path>
     </Svg>
   );
 };
 
-export const GridFill = ({ height, width = height, colour }) => {
+export const ProfileFill = ({ height, width = height, colour }) => {
   return (
     <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
-      <Path d="M120,56v48a16,16,0,0,1-16,16H56a16,16,0,0,1-16-16V56A16,16,0,0,1,56,40h48A16,16,0,0,1,120,56Zm80-16H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V56A16,16,0,0,0,200,40Zm-96,96H56a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,104,136Zm96,0H152a16,16,0,0,0-16,16v48a16,16,0,0,0,16,16h48a16,16,0,0,0,16-16V152A16,16,0,0,0,200,136Z"></Path>
+      <Path d="M216,32V192a8,8,0,0,1-8,8H72a16,16,0,0,0-16,16H192a8,8,0,0,1,0,16H48a8,8,0,0,1-8-8V56A32,32,0,0,1,72,24H208A8,8,0,0,1,216,32Z"></Path>
     </Svg>
   );
 };
@@ -98,6 +98,7 @@ export const Retry = ({ height, width = height, colour }) => {
     </Svg>
   );
 };
+
 export const Dotdotdot = ({ height, width = height, colour }) => {
   return (
     <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
@@ -120,6 +121,55 @@ export const Triangle = ({ height, width = height, colour }) => {
   return (
     <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
       <Path d="M236.8,188.09,149.35,36.22a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.34,24.34,0,0,0,40.55,224h174.9a24.34,24.34,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM222.93,203.8a8.5,8.5,0,0,1-7.48,4.2H40.55a8.5,8.5,0,0,1-7.48-4.2,7.59,7.59,0,0,1,0-7.72L120.52,44.21a8.75,8.75,0,0,1,15,0l87.45,151.87A7.59,7.59,0,0,1,222.93,203.8Z"></Path>
+    </Svg>
+  );
+};
+
+export const TriangleFilled = ({ height, width = height, colour }) => {
+  return (
+    <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
+      <Path d="M236.78,211.81A24.34,24.34,0,0,1,215.45,224H40.55a24.34,24.34,0,0,1-21.33-12.19,23.51,23.51,0,0,1,0-23.72L106.65,36.22a24.76,24.76,0,0,1,42.7,0L236.8,188.09A23.51,23.51,0,0,1,236.78,211.81Z"></Path>
+    </Svg>
+  );
+};
+
+
+export const Bookmark = ({ height, width = height, colour }) => {
+  return (
+    <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
+      <Path d="M184,28H72A20,20,0,0,0,52,48V224a12,12,0,0,0,18.36,10.18l57.63-36,57.65,36A12,12,0,0,0,204,224V48A20,20,0,0,0,184,28Zm-4,174.35-45.65-28.53a12,12,0,0,0-12.72,0L76,202.35V52H180Z"></Path>
+    </Svg>
+  );
+};
+
+export const BookmarkFill = ({ height, width = height, colour }) => {
+  return (
+    <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
+      <Path d="M184,32H72A16,16,0,0,0,56,48V224a8,8,0,0,0,12.24,6.78L128,193.43l59.77,37.35A8,8,0,0,0,200,224V48A16,16,0,0,0,184,32Z"></Path>
+    </Svg>
+  );
+};
+
+export const Share = ({ height, width = height, colour }) => {
+  return (
+    <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
+      <Path d="M220,112v96a20,20,0,0,1-20,20H56a20,20,0,0,1-20-20V112A20,20,0,0,1,56,92H76a12,12,0,0,1,0,24H60v88H196V116H180a12,12,0,0,1,0-24h20A20,20,0,0,1,220,112ZM96.49,72.49,116,53v83a12,12,0,0,0,24,0V53l19.51,19.52a12,12,0,1,0,17-17l-40-40a12,12,0,0,0-17,0l-40,40a12,12,0,1,0,17,17Z"></Path>
+    </Svg>
+  );
+};
+
+export const Reply = ({ height, width = height, colour }) => {
+  return (
+    <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
+      <Path d="M236,200a12,12,0,0,1-24,0,84.09,84.09,0,0,0-84-84H61l27.52,27.51a12,12,0,0,1-17,17l-48-48a12,12,0,0,1,0-17l48-48a12,12,0,0,1,17,17L61,92h67A108.12,108.12,0,0,1,236,200Z"></Path>
+    </Svg>
+  );
+};
+
+export const CloseX = ({ height, width = height, colour }) => {
+  return (
+    <Svg xmlns="http://www.w3.org/2000/svg" width={width} height={height} fill={colour} viewBox="0 0 256 256">
+      <Path d="M208.49,191.51a12,12,0,0,1-17,17L128,145,64.49,208.49a12,12,0,0,1-17-17L111,128,47.51,64.49a12,12,0,0,1,17-17L128,111l63.51-63.52a12,12,0,0,1,17,17L145,128Z"></Path>
     </Svg>
   );
 };

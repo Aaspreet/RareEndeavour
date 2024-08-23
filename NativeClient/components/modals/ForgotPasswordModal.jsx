@@ -6,6 +6,7 @@ import { ArrowRight } from "../../assets/icons";
 import { auth } from "../../config/firebaseConfig";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useTheme } from "react-native-paper";
 
 const ForgotPasswordModal = forwardRef(({}, ref) => {
   const [emailValue, setEmailValue] = useState("");
@@ -18,6 +19,7 @@ const ForgotPasswordModal = forwardRef(({}, ref) => {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
 
   const { colors } = tailwindConfig.theme.extend;
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
 
   const handleSendResetEmail = async () => {
@@ -70,7 +72,7 @@ const ForgotPasswordModal = forwardRef(({}, ref) => {
       ref={ref}
       snapPoints={["40%"]}
       containerStyle={{ backgroundColor: "rgba(0,0,0,0.7)" }}
-      backgroundStyle={{ backgroundColor: colors.primary }}
+      backgroundStyle={{ backgroundColor: theme.colors.surface }}
       keyboardBehavior="interactive"
       handleComponent={() => {
         return (
@@ -79,7 +81,7 @@ const ForgotPasswordModal = forwardRef(({}, ref) => {
               style={{
                 width: "30%",
                 height: 4,
-                backgroundColor: colors.mainWhite,
+                backgroundColor: theme.colors.onSurface,
                 borderRadius: 2,
                 alignSelf: "center",
                 marginTop: 5,
@@ -91,20 +93,20 @@ const ForgotPasswordModal = forwardRef(({}, ref) => {
     >
       <BottomSheetView style={{}}>
         <Text
-          className="text-mainText mt-[21]"
+          className="mt-[21]"
           style={{
-            fontSize: 23,
-            fontFamily: "pd-bold",
+            ...theme.fonts.header,
+            color: theme.colors.onSurface,
             textAlign: "center",
           }}
         >
           Reset Password
         </Text>
         <Text
-          className="text-secondaryText mb-[35]"
+          className="mb-[35]"
           style={{
-            fontSize: 16,
-            fontFamily: "p-medium",
+            ...theme.fonts.textMedium,
+            color: theme.colors.onSurfaceLighter,
             textAlign: "center",
           }}
         >
@@ -113,13 +115,12 @@ const ForgotPasswordModal = forwardRef(({}, ref) => {
         <View className="mx-[35]">
           <BottomSheetTextInput
             style={{
-              color: colors.mainText,
+              color: theme.colors.onSurfaceContainer,
+              backgroundColor: theme.colors.surfaceContainer,
+              ...theme.fonts.textInput,
               paddingHorizontal: 10,
               paddingVertical: 20,
-              backgroundColor: colors.secondary,
               borderRadius: 10,
-              fontSize: 15,
-              fontFamily: "p-medium",
             }}
             keyboardAppearance="dark"
             value={emailValue}
@@ -128,30 +129,26 @@ const ForgotPasswordModal = forwardRef(({}, ref) => {
               setEmailError("");
             }}
             placeholder="Email"
-            placeholderTextColor={colors.mainText}
+            placeholderTextColor={theme.colors.onSurfaceContainer}
           />
           <Text
-            className="text-mainRed px-[10]"
+            className="px-[10]"
             style={{
-              fontSize: 13,
-              fontFamily: "p-medium",
+              ...theme.fonts.textSmall,
+              color: theme.colors.onError,
             }}
           >
             {emailError}
           </Text>
         </View>
         <View className="items-center" style={{ marginTop: keyboardVisible ? 38 : 13 }}>
-          <Pressable
-            className=" items-center pt-[4] px-[25] mt-[10]"
-            onPress={handleSendResetEmail}
-            disabled={isLoading}
-          >
+          <Pressable className=" items-center pt-[4] px-[25] mt-[10]" onPress={handleSendResetEmail} disabled={isLoading}>
             <View className="flex-row items-center">
               <Text
-                className="text-mainText pr-[2]"
+                className="pr-[2]"
                 style={{
-                  fontSize: 15,
-                  fontFamily: "p-semibold",
+                  ...theme.fonts.textMediumBold,
+                  color: theme.colors.onSurface,
                   textAlign: "center",
                 }}
               >
@@ -159,21 +156,18 @@ const ForgotPasswordModal = forwardRef(({}, ref) => {
               </Text>
               {!isLoading && (
                 <View className="mt-[3]">
-                  <ArrowRight colour={colors.mainText} height={19} />
+                  <ArrowRight colour={theme.colors.onSurface} height={19} />
                 </View>
               )}
             </View>
             <Text
               className="text-center"
               style={{
-                color: resetEmailState === "failed" ? colors.mainRed : colors.mainGreen,
-                fontFamily: "p-bold",
-                fontSize: 13,
+                color: resetEmailState === "failed" ? theme.colors.onError : theme.colors.onSurface,
+                ...theme.fonts.textSmallBold,
               }}
             >
-              {(resetEmailState === "sent" && "Sent!") ||
-                (resetEmailState === "failed" && "Failed to send email...") ||
-                ""}
+              {(resetEmailState === "sent" && "Sent!") || (resetEmailState === "failed" && "Failed to send email...") || ""}
             </Text>
           </Pressable>
         </View>

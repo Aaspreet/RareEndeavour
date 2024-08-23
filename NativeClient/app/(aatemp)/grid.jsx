@@ -6,7 +6,7 @@ import { auth } from "../../config/firebaseConfig";
 import { BlurView } from "expo-blur";
 import Animated, { useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 import { Link } from "expo-router";
-import { ScrollingDownContext } from "../../components/contexts";
+import { ScrollingDownContext } from "../../utils/contexts";
 
 const Grid = () => {
   const [layoutComplete, setLayoutComplete] = useState(false);

@@ -5,7 +5,7 @@ import { createPost, deletePost, editPost, fetchPost, fetchPosts } from "../cont
 const router = Router();
 
 router.get("/fetch-single/:postId", verifyTokenOptional, fetchPost);
-router.get("/fetch/:limit", verifyTokenOptional, fetchPosts);
+router.get("/fetch", verifyTokenOptional, fetchPosts);
 router.post("/create", verifyTokenRequired, createPost);
 router.post("/edit", verifyTokenRequired, editPost);
 router.post("/delete", verifyTokenRequired, deletePost);

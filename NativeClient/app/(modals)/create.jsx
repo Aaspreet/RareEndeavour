@@ -12,7 +12,7 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { router } from "expo-router";
-import { useCreatePostMutation } from "../../redux/api/postsApi";
+// import { useCreatePostMutation } from "../../redux/api/postsApi";
 
 const Create = () => {
   const bodyInputRef = useRef(null);
@@ -32,16 +32,16 @@ const Create = () => {
 
   const insets = useSafeAreaInsets();
 
-  const [
-    createPostTrigger,
-    {
-      data: createPostData,
-      error: createPostError,
-      isLoading: createPostIsLoading,
-      isSuccess: createPostIsSuccess,
-      isError: createPostIsError,
-    },
-  ] = useCreatePostMutation();
+  // const [
+  //   createPostTrigger,
+  //   {
+  //     data: createPostData,
+  //     error: createPostError,
+  //     isLoading: createPostIsLoading,
+  //     isSuccess: createPostIsSuccess,
+  //     isError: createPostIsError,
+  //   },
+  // ] = useCreatePostMutation();
 
   const handleContentSizeChange = (e) => {
     if (selection.start === selection.end && selection.start === bodyText.length && bodyInputRef.current.isFocused()) {
@@ -52,20 +52,20 @@ const Create = () => {
   const handleSubmit = () => {
     if (titleText.length < 10) return setToastMessage("Title must be at least 10 characters");
     if (bodyText.length < 10) return setToastMessage("Body must be at least 10 characters");
-    createPostTrigger({ title: titleText, body: bodyText });
+    // createPostTrigger({ title: titleText, body: bodyText });
   };
 
-  useEffect(() => {
-    if (createPostError) {
-      setToastMessage(createPostError?.data?.message);
-    }
-  }, [createPostError]);
+  // useEffect(() => {
+  //   if (createPostError) {
+  //     setToastMessage(createPostError?.data?.message);
+  //   }
+  // }, [createPostError]);
 
-  useEffect(() => {
-    if (createPostIsSuccess) {
-      router.back();
-    }
-  }, [createPostData]);
+  // useEffect(() => {
+  //   if (createPostIsSuccess) {
+  //     router.back();
+  //   }
+  // }, [createPostData]);
 
   useEffect(() => {
     const keyboardWillShow = Keyboard.addListener("keyboardWillShow", (e) => {

@@ -7,6 +7,7 @@ import { router } from "expo-router";
 import { auth } from "../../config/firebaseConfig";
 import { sendEmailVerification } from "firebase/auth";
 import { useLazyFetchUserQuery } from "../../redux/api/userApi";
+import { useTheme } from "react-native-paper";
 
 const VerifyEmail = () => {
   const [initialVerificationEmailState, setInitialVerificationEmailState] = useState("not sent");
@@ -17,7 +18,7 @@ const VerifyEmail = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { colors } = tailwindConfig.theme.extend;
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
 
   const [lazyFetchUser] = useLazyFetchUserQuery();
@@ -34,10 +35,15 @@ const VerifyEmail = () => {
         return setIsLoading(false);
       }
 
+      await auth.currentUser.getIdToken(true).catch((error) => {
+        router.push({ pathname: "user-access", params: { mode: "login" } });
+      });
+
       router.replace("select-username");
     } catch (error) {
       setEmailVerificationError("Hmm... Something went wrong");
-      return setIsLoading(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -62,7 +68,7 @@ const VerifyEmail = () => {
             .unwrap()
             .then((user) => {
               if (!user.username) {
-                return router.replace("select-username");
+                // return router.replace("select-username");
               } else {
                 return router.replace("/");
               }
@@ -91,24 +97,29 @@ const VerifyEmail = () => {
   }, []);
 
   return (
-    <SafeAreaView className="flex-1 bg-primary" edges={["top", "left", "right", "bottom"]}>
+    <SafeAreaView
+      className="flex-1"
+      edges={["top", "left", "right", "bottom"]}
+      style={{
+        backgroundColor: theme.colors.primary,
+      }}
+    >
       <KeyboardAvoidingView className="flex-1 justify-center mb-[20]" behavior="padding">
         <View className="mx-[20]">
           <Text
-            className="text-mainText"
             style={{
-              fontSize: 23,
-              fontFamily: "pd-bold",
+              ...theme.fonts.header,
+              color: theme.colors.onPrimary,
               textAlign: "center",
             }}
           >
             Verify Email
           </Text>
           <Text
-            className="text-secondaryText mt-[10]"
+            className="mt-[10]"
             style={{
-              fontSize: 16,
-              fontFamily: "p-medium",
+              ...theme.fonts.textMedium,
+              color: theme.colors.onPrimaryLighter,
               textAlign: "center",
               lineHeight: 24,
             }}
@@ -119,7 +130,7 @@ const VerifyEmail = () => {
               "Something went wrong trying to send verification email to: "}
             <Text
               style={{
-                color: initialVerificationEmailState == "failed" ? colors.mainRed : colors.mainGreen,
+                color: initialVerificationEmailState == "failed" ? theme.colors.onError : theme.colors.onSuccess,
                 fontFamily: "p-bold",
               }}
             >
@@ -138,10 +149,10 @@ const VerifyEmail = () => {
               disabled={isLoading}
             >
               <Text
-                className="text-mainText pr-[2]"
+                className="pr-[2]"
                 style={{
-                  fontSize: 16,
-                  fontFamily: "p-semibold",
+                  ...theme.fonts.textMediumBold,
+                  color: theme.colors.onPrimary,
                   textAlign: "center",
                 }}
               >
@@ -149,17 +160,17 @@ const VerifyEmail = () => {
               </Text>
               {!isLoading && (
                 <View className="mt-[3]">
-                  <ArrowRight colour={colors.mainText} height={19} />
+                  <ArrowRight colour={theme.colors.onPrimary} height={19} />
                 </View>
               )}
             </Pressable>
 
             <View>
               <Text
-                className="text-mainRed text-center mx-[50]"
+                className="text-center mx-[50]"
                 style={{
-                  fontSize: 13,
-                  fontFamily: "p-medium",
+                  ...theme.fonts.textSmall,
+                  color: theme.colors.onError,
                 }}
               >
                 {emailVerificationError}
@@ -173,9 +184,8 @@ const VerifyEmail = () => {
           <Text
             className="text-center"
             style={{
-              color: resendVerificationEmailState == "failed" ? colors.mainRed : colors.mainGreen,
-              fontSize: 14,
-              fontFamily: "p-medium",
+              ...theme.fonts.textSmall,
+              color: resendVerificationEmailState == "failed" ? theme.colors.onError : theme.colors.onSuccess,
               lineHeight: 20,
             }}
           >
@@ -185,10 +195,10 @@ const VerifyEmail = () => {
               (resendVerificationEmailState == "sent" && "Email sent")}
           </Text>
           <Text
-            className="text-mainText text-center"
+            className="text-center"
             style={{
-              fontSize: 16,
-              fontFamily: "p-semibold",
+              ...theme.fonts.textSmall,
+              color: theme.colors.onPrimaryLighter,
               textAlign: "center",
             }}
           >
@@ -199,9 +209,11 @@ const VerifyEmail = () => {
       <Pressable
         className="absolute right-0 mb-[20] mx-[20] px-[10] py-[10]"
         style={{ marginTop: insets.top + 7 }}
-        onPress={router.back}
+        onPress={() => {
+          router.replace({ pathname: "user-access", params: { mode: "login" } });
+        }}
       >
-        <Close colour={colors.mainText} height={27} />
+        <Close colour={theme.colors.onPrimary} height={27} />
       </Pressable>
     </SafeAreaView>
   );

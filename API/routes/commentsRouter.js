@@ -5,7 +5,7 @@ import { verifyTokenOptional, verifyTokenRequired } from "../middleware/verifyTo
 
 const router = Router();
 
-router.post("/fetch", verifyTokenOptional, fetchComments);
+router.post("/fetch/:postId", verifyTokenOptional, fetchComments);
 router.post("/create", verifyTokenRequired, createComment);
 router.post("/edit", verifyTokenRequired, editComment);
 router.post("/delete", verifyTokenRequired, deleteComment);

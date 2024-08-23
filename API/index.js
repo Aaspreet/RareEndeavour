@@ -6,6 +6,7 @@ import userRouter from "./routes/userRouter.js";
 import postsRouter from "./routes/postsRouter.js";
 import commentsRouter from "./routes/commentsRouter.js";
 import admin from "./config/fbAdmin.js";
+import pool from "./config/pool.js";
 
 const app = express();
 
@@ -13,6 +14,10 @@ app.use(cors());
 app.use(express.json());
 
 const server = http.createServer(app);
+
+app.use("/api/test", async (req, res) => {
+  const response = await pool.query("SELECT * FROM users")
+});
 
 app.use("/api/auth", authRouter);
 app.use("/api/user", userRouter);

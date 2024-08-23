@@ -15,14 +15,14 @@ import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
 import tailwindConfig from "../tailwind.config";
 import AuthPromptModal from "../components/modals/AuthPromptModal";
-import { AuthPromptModalContext, ScrollingDownContext } from "../components/contexts";
+import { AuthPromptModalContext, ScrollingDownContext } from "../utils/contexts.js";
+import { PaperProvider } from "react-native-paper";
+import theme from "../assets/theme";
 
 SplashScreen.preventAutoHideAsync();
 
 const Layout = () => {
   const [authInitialized, setAuthInitialized] = useState(false);
-
-  const { colors } = tailwindConfig.theme.extend;
 
   const [scrollingDown, setScrollingDown] = useState(false);
 
@@ -59,22 +59,25 @@ const Layout = () => {
   return (
     <Provider store={store}>
       <PersistGate loading={null} persistor={persistor}>
-        <SafeAreaProvider>
-          <GestureHandlerRootView>
-            <BottomSheetModalProvider>
-              <AuthPromptModalContext.Provider value={{ authPromptModalRef }}>
-                <ScrollingDownContext.Provider value={{ scrollingDown, setScrollingDown }}>
-                  <Stack screenOptions={{ headerShown: false }}>
-                    <Stack.Screen name="(tabs)" />
-                    <Stack.Screen name="(auth)" options={{ animation: "slide_from_bottom" }} />
-                    <Stack.Screen name="(test)" />
-                  </Stack>
-                </ScrollingDownContext.Provider>
-              </AuthPromptModalContext.Provider>
-              <AuthPromptModal ref={authPromptModalRef} />
-            </BottomSheetModalProvider>
-          </GestureHandlerRootView>
-        </SafeAreaProvider>
+        <GestureHandlerRootView>
+          <PaperProvider theme={theme}>
+            <SafeAreaProvider>
+              <BottomSheetModalProvider>
+                <AuthPromptModalContext.Provider value={{ authPromptModalRef }}>
+                  <ScrollingDownContext.Provider value={{ scrollingDown, setScrollingDown }}>
+                    <Stack screenOptions={{ headerShown: false }}>
+                      <Stack.Screen name="(tabs)" />
+                      <Stack.Screen name="(auth)" options={{ animation: "slide_from_bottom" }} />
+                      <Stack.Screen name="(pages)" />
+                      <Stack.Screen name="(test)" options={{}} />
+                    </Stack>
+                  </ScrollingDownContext.Provider>
+                </AuthPromptModalContext.Provider>
+                <AuthPromptModal ref={authPromptModalRef} />
+              </BottomSheetModalProvider>
+            </SafeAreaProvider>
+          </PaperProvider>
+        </GestureHandlerRootView>
       </PersistGate>
     </Provider>
   );

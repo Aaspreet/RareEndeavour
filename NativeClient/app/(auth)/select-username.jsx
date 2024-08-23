@@ -3,11 +3,12 @@ import React, { useEffect, useState } from "react";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import tailwindConfig from "../../tailwind.config";
 import { ArrowRight, Close } from "../../assets/icons";
-import { router } from "expo-router";
+import { Link, router } from "expo-router";
 import { TextInput } from "react-native-gesture-handler";
-import { useRegisterMutation } from "../../redux/api/authApi";
 import { usernameValidationRules } from "../../assets/other/authenticationRules";
 import { auth } from "../../config/firebaseConfig";
+import axios from "../../config/axiosConfig";
+import { useTheme } from "react-native-paper";
 
 const SelectUsername = () => {
   const [usernameValue, setUsernameValue] = useState("");
@@ -15,9 +16,7 @@ const SelectUsername = () => {
 
   const [usernameError, setUsernameError] = useState("");
 
-  const [registerTrigger] = useRegisterMutation();
-
-  const { colors } = tailwindConfig.theme.extend;
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
 
   const handleSubmit = async () => {
@@ -30,14 +29,17 @@ const SelectUsername = () => {
         return setIsLoading(false);
       }
     }
-
-    await registerTrigger({ username: usernameValue })
-      .unwrap()
-      .then(() => router.push("/"))
-      .catch((error) => {
-        setUsernameError(error.data?.message);
+    try {
+      const response = await axios.post("/auth/register", { username: usernameValue });
+      await auth.currentUser.getIdToken(true).catch((error) => {
+        router.push({ pathname: "user-access", params: { mode: "login" } });
       });
-    setIsLoading(false);
+      router.replace("/");
+    } catch (error) {
+      setUsernameError(error.response.data?.message || "Error selecting username");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -51,24 +53,29 @@ const SelectUsername = () => {
   }, []);
 
   return (
-    <SafeAreaView className="flex-1 bg-primary" edges={["top", "left", "right", "bottom"]}>
+    <SafeAreaView
+      className="flex-1"
+      edges={["top", "left", "right", "bottom"]}
+      style={{
+        backgroundColor: theme.colors.primary,
+      }}
+    >
       <KeyboardAvoidingView className="flex-1 justify-center mb-[20]" behavior="padding">
         <View className="mx-[20]">
           <Text
-            className="text-mainText"
             style={{
-              fontSize: 23,
-              fontFamily: "pd-bold",
+              ...theme.fonts.header,
+              color: theme.colors.onPrimary,
               textAlign: "center",
             }}
           >
             Select Username
           </Text>
           <Text
-            className="text-secondaryText mt-[10]"
+            className="mt-[10]"
             style={{
-              fontSize: 16,
-              fontFamily: "p-medium",
+              ...theme.fonts.textMedium,
+              color: theme.colors.onPrimaryLighter,
               textAlign: "center",
               lineHeight: 24,
             }}
@@ -79,10 +86,11 @@ const SelectUsername = () => {
 
         <View className="mx-[25] mt-[30]">
           <TextInput
-            className="text-mainText px-[10] py-[20] bg-secondary rounded-[10px] mt-[10]"
+            className="px-[10] py-[20] rounded-[10px] mt-[10]"
             style={{
-              fontSize: 15,
-              fontFamily: "p-medium",
+              ...theme.fonts.textInput,
+              backgroundColor: theme.colors.primaryContainer,
+              color: theme.colors.onPrimaryContainer,
             }}
             value={usernameValue}
             onChangeText={(text) => {
@@ -91,13 +99,13 @@ const SelectUsername = () => {
             }}
             keyboardAppearance="dark"
             placeholder="Username"
-            placeholderTextColor={colors.mainText}
+            placeholderTextColor={theme.colors.onPrimaryContainer}
           />
           <Text
-            className="text-mainRed px-[10]"
+            className="px-[10]"
             style={{
-              fontSize: 13,
-              fontFamily: "p-medium",
+              ...theme.fonts.textSmall,
+              color: theme.colors.onError,
             }}
           >
             {usernameError}
@@ -113,10 +121,10 @@ const SelectUsername = () => {
             disabled={isLoading}
           >
             <Text
-              className="text-mainText pr-[2]"
+              className="pr-[2]"
               style={{
-                fontSize: 16,
-                fontFamily: "p-semibold",
+                ...theme.fonts.textMediumBold,
+                color: theme.colors.onPrimary,
                 textAlign: "center",
               }}
             >
@@ -124,17 +132,17 @@ const SelectUsername = () => {
             </Text>
             {!isLoading && (
               <View className="mt-[3]">
-                <ArrowRight colour={colors.mainText} height={19} />
+                <ArrowRight colour={theme.colors.onPrimary} height={19} />
               </View>
             )}
           </Pressable>
 
           <View>
             <Text
-              className="text-mainRed text-center mx-[50]"
+              className="text-center mx-[50]"
               style={{
-                fontSize: 13,
-                fontFamily: "p-medium",
+                ...theme.fonts.textSmall,
+                color: theme.colors.onError,
               }}
             >
               {/**error */}
@@ -142,12 +150,48 @@ const SelectUsername = () => {
           </View>
         </View>
       </KeyboardAvoidingView>
+
+      <View className="items-center justify-center">
+        <Text
+          style={{
+            color: theme.colors.onPrimaryLighter,
+            ...theme.fonts.textExtraSmall,
+            lineHeight: 20,
+          }}
+        >
+          {auth.currentUser?.email}
+        </Text>
+        <Link
+          className="items-center py-[4] px-[4] mb-[17] mt-[5] flex-row justify-center"
+          href={{ pathname: "user-access", params: { mode: "register" } }}
+          replace
+          asChild
+        >
+          <Pressable
+            onPress={() => {
+              auth.signOut();
+            }}
+          >
+            <Text
+              className="text-center"
+              style={{
+                color: theme.colors.accent,
+                ...theme.fonts.textMediumBold,
+                lineHeight: 20,
+              }}
+            >
+              sign out
+            </Text>
+          </Pressable>
+        </Link>
+      </View>
+
       <Pressable
         className="absolute right-0 mb-[20] mx-[20] px-[10] py-[10]"
         style={{ marginTop: insets.top + 7 }}
         onPress={router.back}
       >
-        <Close colour={colors.mainText} height={27} />
+        <Close colour={theme.colors.onPrimary} height={27} />
       </Pressable>
     </SafeAreaView>
   );

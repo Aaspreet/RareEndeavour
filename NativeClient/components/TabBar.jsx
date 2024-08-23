@@ -17,29 +17,33 @@ import {
   NotificationsFill,
   NotificationsOutline,
   Plus,
+  ProfileFill,
+  ProfileOutline,
 } from "../assets/icons";
-import { AuthPromptModalContext, ScrollingDownContext } from "./contexts";
+import { AuthPromptModalContext, ScrollingDownContext } from "../utils/contexts";
+import { useTheme } from "react-native-paper";
+import confirmUserAuthenticated from "../utils/functions/confirmUserAuthenticated";
 
 const TabBar = ({ state, ...rest }) => {
   const blurViewIntensity = useSharedValue(0);
 
+  const theme = useTheme();
+
   const focusedIconSize = 27;
   const unfocusedIconSize = 25;
 
-  const focusedIconColour = "rgb(255, 255, 255)";
-  const unfocusedIconColour = "rgb(255, 255, 255)";
+  const focusedIconColour = theme.colors.onBackground;
+  const unfocusedIconColour = theme.colors.onBackground;
 
   const routesRequiringAuth = ["create", "chat", "inbox"];
 
-  const routesWithAnimatedTabBar = ["index", "grid", "chat"];
+  const routesWithAnimatedTabBar = ["index", "profile", "chat"];
   const allowAnimatedTabBar = routesWithAnimatedTabBar.includes(state.routes[state.index].name);
 
   const { authPromptModalRef } = useContext(AuthPromptModalContext);
 
   const { scrollingDown } = useContext(ScrollingDownContext);
   const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
-
-  const { colors } = tailwindConfig.theme.extend;
 
   const routesConfig = [
     {
@@ -48,9 +52,9 @@ const TabBar = ({ state, ...rest }) => {
       name: "index",
     },
     {
-      iconOutline: <GridOutline height={unfocusedIconSize} colour={unfocusedIconColour} />,
-      iconFilled: <GridFill height={focusedIconSize} colour={focusedIconColour} />,
-      name: "grid",
+      iconOutline: <ProfileOutline height={unfocusedIconSize} colour={unfocusedIconColour} />,
+      iconFilled: <ProfileFill height={focusedIconSize} colour={focusedIconColour} />,
+      name: "profile",
     },
     {
       iconOutline: <Plus height={unfocusedIconSize} colour={unfocusedIconColour} />,
@@ -86,7 +90,7 @@ const TabBar = ({ state, ...rest }) => {
         paddingBottom: rest.insets.bottom,
         paddingTop: 8,
         paddingHorizontal: 5,
-        backgroundColor: allowAnimatedTabBar ? rgba(colors.secondary, 0.8) : colors.secondary,
+        backgroundColor: allowAnimatedTabBar ? rgba(theme.colors.background, 0.8) : theme.colors.background,
         //The position absolute is making expo go crash on android
         position: allowAnimatedTabBar && "absolute",
       }}
@@ -97,9 +101,13 @@ const TabBar = ({ state, ...rest }) => {
         return (
           <Pressable
             key={route.name}
-            onPress={() => {
-              if (!auth.currentUser && routesRequiringAuth.includes(route.name))
-                return authPromptModalRef.current?.present();
+            onPress={async () => {
+              // if (!auth.currentUser && routesRequiringAuth.includes(route.name))
+              //   return authPromptModalRef.current?.present();
+              if (routesRequiringAuth.includes(route.name)) {
+                const allowRedirection = await confirmUserAuthenticated(authPromptModalRef);
+                if (!allowRedirection) return;
+              }
 
               route.name === "index" ? router.push("") : router.push(route.name);
             }}

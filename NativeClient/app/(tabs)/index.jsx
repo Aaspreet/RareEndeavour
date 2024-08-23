@@ -5,72 +5,61 @@ import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context"
 import { useDispatch, useSelector } from "react-redux";
 import { auth } from "../../config/firebaseConfig";
 import { FontAwesome, Ionicons, MaterialCommunityIcons, Octicons } from "react-native-vector-icons";
-import { postsApi, useLazyFetchPostsQuery } from "../../redux/api/postsApi";
 import tailwindConfig from "../../tailwind.config";
-import { ScrollingDownContext } from "../../components/contexts";
-import PostFeed from "../../components/Feeds/PostFeed";
+import { ScrollingDownContext } from "../../utils/contexts";
+import PostFeed from "../../components/feeds/PostFeed";
+import axios from "../../config/axiosConfig";
+import { Retry } from "../../assets/icons";
+import updateScrollingDown from "../../utils/functions/updateScrollingDown";
+import { PostFeedListFooter } from "../../components/other/PostFeedList";
+import { useTheme } from "react-native-paper";
 
 const Home = () => {
   const [posts, setPosts] = useState([]);
 
-  const [
-    lazyFetchPosts,
-    {
-      data: fetchPostsData,
-      error: fetchPostsError,
-      isLoading: fetchPostsIsLoading,
-      isError: fetchPostsIsError,
-      isFetching: fetchPostsIsFetching,
-    },
-  ] = useLazyFetchPostsQuery();
-
   const [error, setError] = useState("");
+  const [isFetching, setIsFetching] = useState(false);
 
   const previousScrollOffset = useRef(0);
   const { scrollingDown, setScrollingDown } = useContext(ScrollingDownContext);
 
   const insets = useSafeAreaInsets();
-  const { colors } = tailwindConfig.theme.extend;
+  const theme = useTheme();
 
   const fetchPosts = () => {
-    console.log("called");
+    if (isFetching) return;
+    // console.log("fetching posts in index");
+    setError("");
+    setIsFetching(true);
 
-    if (fetchPostsIsFetching) return;
-    lazyFetchPosts()
-      .unwrap()
+    axios
+      .get(`/posts/fetch?limit=3`)
       .then((response) => {
-        console.log(response);
-        console.log('response above')
-
-        
-        if (!response) return setError("No more posts...");
-        // console.log(posts.length);
-        setPosts([...posts, ...response]);
+        if (!response.data) return setError("No more posts...");
+        setPosts([...posts, ...response.data]);
+        setIsFetching(false);
       })
       .catch((error) => {
-        console.log(error);
         setError("Error fetching posts");
+        setIsFetching(false);
       });
   };
 
   const handleScroll = (e) => {
     const currentOffset = e.nativeEvent.contentOffset.y;
-    const direction = currentOffset > previousScrollOffset.current ? "down" : "up";
+    const contentSize = e.nativeEvent.contentSize.height;
+    const visibleLength = e.nativeEvent.layoutMeasurement.height;
 
-    const isAtTop = currentOffset <= 20;
-    const isAtBottom = e.nativeEvent.contentSize.height <= e.nativeEvent.layoutMeasurement.height + currentOffset + 40;
+    const distanceFromEnd = contentSize - visibleLength - currentOffset;
 
-    if (isAtTop || isAtBottom) return setScrollingDown(false);
+    if (distanceFromEnd < 0.5 * visibleLength) fetchPosts();
 
-    if (Math.abs(currentOffset - previousScrollOffset.current) < 10) return;
-
-    if (direction === "down" && !scrollingDown) {
-      setScrollingDown(true);
-    } else if (direction === "up" && scrollingDown) {
-      setScrollingDown(false);
-    }
-
-    previousScrollOffset.current = currentOffset;
+    previousScrollOffset.current = updateScrollingDown(
+      e,
+      scrollingDown,
+      setScrollingDown,
+      previousScrollOffset.current
+    );
   };
 
   useEffect(() => {
@@ -78,23 +67,26 @@ const Home = () => {
   }, []);
 
   return (
-    <SafeAreaView className="flex-1 bg-secondary" edges={["left", "right", "bottom"]}>
+    <SafeAreaView
+      className="flex-1"
+      edges={["left", "right", "bottom"]}
+      style={{
+        backgroundColor: theme.colors.background,
+      }}
+    >
       <FlatList
         data={posts}
-        contentContainerStyle={{ paddingTop: insets.top, rowGap: 35 }}
-        onEndReached={() => {
-          console.log("end reachd home");
-          fetchPosts();
+        contentContainerStyle={{
+          paddingTop: insets.top,
+          rowGap: 35,
         }}
-        onEndReachedThreshold={0.5}
         ListHeaderComponent={
           <View className="justify-center">
             <Text
-              className="text-white mt-4"
+              className="mt-4"
               style={{
-                fontSize: 20,
-                fontFamily: "p-semibold",
-                textAlign: "center",
+                ...theme.fonts.headerSmaller,
+                color: theme.colors.onBackground,
                 letterSpacing: 1.25,
               }}
             >
@@ -102,27 +94,7 @@ const Home = () => {
             </Text>
           </View>
         }
-        ListFooterComponent={
-          <View
-            className=""
-            style={{
-              marginBottom: insets.bottom + 25,
-            }}
-          >
-            <Text
-              className=""
-              style={{
-                color: error ? colors.mainRed : colors.mainText,
-                fontSize: 16,
-                fontFamily: "p-semibold",
-                textAlign: "center",
-                letterSpacing: 1.25,
-              }}
-            >
-              {error || "Fetching posts..."}
-            </Text>
-          </View>
-        }
+        ListFooterComponent={<PostFeedListFooter error={error} fetchPosts={fetchPosts} />}
         keyExtractor={(item) => item.id}
         onScroll={handleScroll}
         renderItem={({ item }) => <PostFeed item={item} />}

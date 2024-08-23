@@ -12,7 +12,7 @@ import updateScrollingDown from "../../utils/functions/updateScrollingDown";
 import { PostFeedListFooter } from "../../components/other/PostFeedList";
 import { useTheme } from "react-native-paper";
 
-const DraggableHeightView = () => {
+const Profile = () => {
   const [initialRootViewHeight, setInitialRootViewHeight] = useState(null);
   const initialNameViewPadding = 125;
 
@@ -214,4 +214,4 @@ const DraggableHeightView = () => {
   );
 };
 
-export default DraggableHeightView;
+export default Profile;

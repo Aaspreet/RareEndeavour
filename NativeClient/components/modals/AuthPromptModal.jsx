@@ -3,16 +3,17 @@ import React, { forwardRef, useContext } from "react";
 import tailwindConfig from "../../tailwind.config";
 import { BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { Link } from "expo-router";
+import { useTheme } from "react-native-paper";
 
 const AuthPromptModal = forwardRef(({}, ref) => {
-  const { colors } = tailwindConfig.theme.extend;
+  const theme = useTheme();
 
   return (
     <BottomSheetModal
       ref={ref}
       snapPoints={["46%"]}
       containerStyle={{ backgroundColor: "rgba(0,0,0,0.7)" }}
-      backgroundStyle={{ backgroundColor: colors.primary }}
+      backgroundStyle={{ backgroundColor: theme.colors.surface }}
       handleComponent={() => {
         return (
           <View>
@@ -20,7 +21,7 @@ const AuthPromptModal = forwardRef(({}, ref) => {
               style={{
                 width: "30%",
                 height: 4,
-                backgroundColor: colors.mainWhite,
+                backgroundColor: theme.colors.onSurface,
                 borderRadius: 2,
                 alignSelf: "center",
                 marginTop: 5,
@@ -32,10 +33,10 @@ const AuthPromptModal = forwardRef(({}, ref) => {
     >
       <BottomSheetView style={{}}>
         <Text
-          className="text-mainText mt-[30] mb-[35]"
+          className="mt-[30] mb-[35]"
           style={{
-            fontSize: 23,
-            fontFamily: "pd-bold",
+            ...theme.fonts.header,
+            color: theme.colors.onSurface,
             textAlign: "center",
           }}
         >
@@ -47,25 +48,35 @@ const AuthPromptModal = forwardRef(({}, ref) => {
             onPress={() => {
               ref.current?.close();
             }}
-            className="bg-secondary rounded-[10px] py-[15]"
+            asChild
           >
-            <Text
-              className="text-secondaryText"
+            <Pressable
+              className="rounded-[10px] py-[15]"
               style={{
-                fontSize: 16,
-                fontFamily: "p-medium",
-                textAlign: "center",
+                backgroundColor: theme.colors.surfaceContainer,
               }}
             >
-              Continue with email
-            </Text>
+              <Text
+                style={{
+                  ...theme.fonts.textMedium,
+                  color: theme.colors.onSurfaceContainer,
+                  textAlign: "center",
+                }}
+              >
+                Continue with email
+              </Text>
+            </Pressable>
           </Link>
-          <Pressable className="bg-secondary rounded-[10px] mt-[10] py-[15]">
+          <Pressable
+            className="rounded-[10px] mt-[10] py-[15]"
+            style={{
+              backgroundColor: theme.colors.surfaceContainer,
+            }}
+          >
             <Text
-              className="text-secondaryText"
               style={{
-                fontSize: 16,
-                fontFamily: "p-medium",
+                ...theme.fonts.textMedium,
+                color: theme.colors.onSurfaceContainer,
                 textAlign: "center",
               }}
             >
@@ -82,20 +93,18 @@ const AuthPromptModal = forwardRef(({}, ref) => {
             className="py-[4] px-[4]"
           >
             <Text
-              className="text-mainRed"
               style={{
-                fontSize: 16,
-                fontFamily: "p-bold",
+                ...theme.fonts.textMediumBold,
+                color: theme.colors.accent,
               }}
             >
               Login
             </Text>
           </Link>
           <Text
-            className="text-mainText"
             style={{
-              fontSize: 16,
-              fontFamily: "p-semibold",
+              ...theme.fonts.textMediumBold,
+              color: theme.colors.onSurfaceLighter,
             }}
           >
             instead

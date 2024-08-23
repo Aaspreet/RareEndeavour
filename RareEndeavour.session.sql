@@ -86,3 +86,4 @@ CREATE TABLE `post_views` (
 --
 --
 --@block
+SELECT * FROM users;

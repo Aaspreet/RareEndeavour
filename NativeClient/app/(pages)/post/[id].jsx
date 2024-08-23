@@ -1,174 +1,98 @@
-import { View, Text, Pressable, Keyboard, ScrollView, FlatList } from "react-native";
-import React, { useEffect, useMemo, useState } from "react";
+import { View, Text, Pressable, FlatList, KeyboardAvoidingView, Keyboard } from "react-native";
+import React, { forwardRef, useEffect, useRef, useState } from "react";
+import { Bookmark, CloseX, Dotdotdot, Reply, Share, Triangle } from "../../../assets/icons";
+import { useTheme, TextInput } from "react-native-paper";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { FontAwesome, Ionicons, MaterialCommunityIcons } from "react-native-vector-icons";
-import { router, useLocalSearchParams } from "expo-router";
-import { postsApi, useLazyGetPostQuery } from "../../../redux/api/postsApi";
-import { useDispatch } from "react-redux";
-import { useGetCommentsMutation } from "../../../redux/api/commentsApi";
-import AddComment from "../../../components/other/AddComment";
+import axios from "../../../config/axiosConfig";
+import { useLocalSearchParams } from "expo-router";
+import AddComment from "../../../components/post/AddComment";
+import PostDisplay from "../../../components/post/PostDisplay";
+import CommentsDisplay from "../../../components/post/CommentsDisplay";
 
-const PostPage = () => {
+const Post = () => {
   const { id } = useLocalSearchParams();
-  const [getPost, { data: postData, error: postError, isLoading: postIsLoading, isSuccess: postIsSuccess }] =
-    useLazyGetPostQuery();
 
-  const [
-    getComments,
-    {
-      data: commentsData,
-      error: commentsError,
-      isLoading: commentsIsLoading,
-      isSuccess: commentsIsSuccess,
-      reset: resetComments,
-    },
-  ] = useGetCommentsMutation();
-
+  const [post, setPost] = useState(null);
   const [comments, setComments] = useState([]);
-  const [keyboardShowing, setKeyboardShowing] = useState(false);
-  const [keyboardHeight, setKeyboardHeight] = useState(0);
 
   const [replyingTo, setReplyingTo] = useState(null);
 
+  const [isFetchingPost, setIsFetchingPost] = useState(false);
+  const [isFetchingComments, setIsFetchingComments] = useState(false);
+
+  const addCommentInputRef = useRef(null);
+
+  const [postError, setPostError] = useState(null);
+  const [commentsError, setCommentsError] = useState(null);
+
   const insets = useSafeAreaInsets();
+  const theme = useTheme();
 
-  useEffect(() => {
-    if (commentsData) {
-      if (comments[comments.length - 1]?.id !== commentsData.comments[commentsData.comments.length - 1]?.id) {
-        setComments((prev) => [...prev, ...commentsData.comments]);
-      }
-    }
-  }, [commentsData]);
-
-  useEffect(() => {
-    getPost(id);
-    getComments({ postId: id, quantity: 10 });
-
-    const keyboardWillShow = Keyboard.addListener("keyboardWillShow", (e) => {
-      setKeyboardHeight(e.endCoordinates.height);
-      setKeyboardShowing(true);
-    });
-    const keyboardDidShowListener = Keyboard.addListener("keyboardDidShow", (e) => {
-      setKeyboardHeight(e.endCoordinates.height);
-      setKeyboardShowing(true);
-    });
-    const keyboaredWillHide = Keyboard.addListener("keyboardWillHide", () => {
-      setKeyboardShowing(false);
-    });
-    const keyboardDidHideListener = Keyboard.addListener("keyboardDidHide", () => {
-      setKeyboardShowing(false);
-    });
-
-    return () => {
-      keyboardDidShowListener.remove();
-      keyboardDidHideListener.remove();
-      keyboardWillShow.remove();
-      keyboaredWillHide.remove();
-    };
-  }, []);
-
-  if (postError) {
-    return (
-      <SafeAreaView
-        className="flex-1"
-        style={{ backgroundColor: "rgb(20, 20, 20)" }}
-        edges={["left", "right", "bottom", "top"]}
-      >
-        <View className="flex-row ">
-          <Pressable
-            className="px-3 py-1"
-            onPress={() => {
-              router.canGoBack() ? router.back() : router.replace("index");
-            }}
-          >
-            <Ionicons name="chevron-back-outline" size={25} color={"white"} />
-          </Pressable>
-        </View>
-        <View className="mx-4 mt-7">
-          <Text className="text-white font-bold" style={{ fontSize: 25 }}>
-            Error
-          </Text>
-          <Text className="text-white mt-4" style={{ fontSize: 15 }}>
-            An error occurred while fetching the post.
-          </Text>
-        </View>
-      </SafeAreaView>
-    );
-  }
-
-  const PostStructure = () => {
-    return (
-      <View className="pb-7">
-        <Text className="text-white font-bold" style={{ fontSize: 25 }}>
-          {postData?.post?.title}
-        </Text>
-        <Text className="text-white mt-4" style={{ fontSize: 15 }}>
-          {postData?.post?.body}
-        </Text>
-      </View>
-    );
+  const fetchPost = async () => {
+    if (isFetchingPost) return;
+    setIsFetchingPost(true);
+    await axios
+      .get(`/posts/fetch-single/${id}`)
+      .then((res) => {
+        setPost(res.data);
+        setIsFetchingPost(false);
+      })
+      .catch((err) => {
+        setPostError(err.response.data.message || "Error fetching post");
+        setIsFetchingPost(false);
+      });
   };
 
+  const fetchComments = async () => {
+    if (isFetchingComments) return;
+    setIsFetchingComments(true);
+    await axios
+      .post(`/comments/fetch/${id}?limit=3`, { alreadyFetchedRootComments: [] })
+      .then((res) => {
+        setComments(res.data);
+        setIsFetchingComments(false);
+      })
+      .catch((err) => {
+        console.log(err);
+        setCommentsError(err.response?.data?.message || "Error fetching comments");
+        setIsFetchingComments(false);
+      });
+  };
+
+  useEffect(() => {
+    fetchPost();
+    fetchComments();
+  }, []);
+
   return (
-    <SafeAreaView
+    <KeyboardAvoidingView
       className="flex-1"
-      style={{ backgroundColor: "rgb(20, 20, 20)" }}
-      edges={["left", "right", "bottom", "top"]}
+      behavior="padding"
+      edges={["left", "right"]}
+      style={{
+        backgroundColor: theme.colors.background,
+      }}
     >
-      <View className="flex-1">
-        <View className="flex-1">
-          <View className="flex-row">
-            <Pressable
-              className="px-3 py-1"
-              onPress={() => {
-                router.canGoBack() ? router.back() : router.replace("index");
-              }}
-            >
-              <Ionicons name="chevron-back-outline" size="25" color={"white"} />
-            </Pressable>
-          </View>
-          <FlatList
-            data={comments}
-            keyExtractor={(comment) => comment.id.toString()}
-            ListHeaderComponent={PostStructure}
-            className="mx-4 mt-7 flex-1"
-            onEndReachedThreshold={0.5}
-            onEndReached={() => {
-              console.log("end reached");
-              if (!commentsIsLoading) {
-                getComments({ postId: id, quantity: 10 });
-              }
+      <FlatList
+        ListHeaderComponent={<PostDisplay post={post} />} //Display error if there is.
+        data={comments}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={{}}
+        renderItem={({ item }) => (
+          <View
+            className="py-[10] mt-[25]"
+            style={{
+              backgroundColor: theme.colors.primary,
+              borderRadius: 8,
             }}
-            renderItem={({ item }) => (
-              <View className="flex-1 py-4">
-                {console.log(item)}
-                <Pressable className="py-1">
-                  <Text className="text-white font-semibold">{item.username}</Text>
-                </Pressable>
-                <Text className="text-white">{item.content}</Text>
-                <Pressable
-                  className="py-1"
-                  onPress={() => {
-                    const deconstructedItem = { ...item, username: item.username, id: item.id };
-                    setReplyingTo(deconstructedItem);
-                  }}
-                >
-                  <Text className="text-white font-semibold">Reply</Text>
-                </Pressable>
-              </View>
-            )}
-          />
-        </View>
-        <AddComment
-          postId={id}
-          replyingTo={replyingTo}
-          setReplyingTo={setReplyingTo}
-          keyboardShowing={keyboardShowing}
-          keyboardHeight={keyboardHeight}
-        />
-      </View>
-    </SafeAreaView>
+          >
+            <CommentsDisplay item={item} post={post} setReplyingTo={setReplyingTo} ref={addCommentInputRef} />
+          </View>
+        )}
+      />
+      <AddComment postId={id} replyingTo={replyingTo} setReplyingTo={setReplyingTo} ref={addCommentInputRef} />
+    </KeyboardAvoidingView>
   );
 };
 
-export default PostPage;
+export default Post;

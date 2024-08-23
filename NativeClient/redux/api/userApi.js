@@ -6,7 +6,7 @@ export const userApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.EXPO_PUBLIC_API_URL}/api/user`,
     prepareHeaders: async (headers) => {
-      const token = await auth.currentUser.getIdToken(true);
+      const token = await auth.currentUser.getIdToken();
       if (token) headers.set("Authorization", `Bearer ${token}`);
       // headers.set("Cache-Control", "no-cache");
     },
@@ -14,15 +14,15 @@ export const userApi = createApi({
   tagTypes: ["user"],
   endpoints: (builder) => ({
     fetchUser: builder.query({
-      query: () => `@me`,
+      query: () => `/`,
       providesTags: ["user"],
     }),
     fetchTargetUser: builder.query({
-      query: (params) => `${params.uid}`,
+      query: (params) => `/${params.uid}`,
     }),
     updateQuote: builder.mutation({
       query: (params) => ({
-        url: `update-quote`,
+        url: `/update-quote`,
         method: "POST",
         body: { ...params },
       }),

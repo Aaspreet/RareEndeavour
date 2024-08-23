@@ -1,7 +1,6 @@
 import { View, Text, TextInput, KeyboardAvoidingView, Pressable, Keyboard } from "react-native";
 import { FontAwesome, Ionicons, MaterialCommunityIcons } from "react-native-vector-icons";
 import React, { useEffect, useRef, useState } from "react";
-import { useCreateCommentMutation } from "../../redux/api/commentsApi";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const AddComment = ({ postId, replyingTo, setReplyingTo, keyboardShowing, keyboardHeight }) => {

@@ -10,6 +10,7 @@ import { createUserWithEmailAndPassword, fetchSignInMethodsForEmail, signInWithE
 import { useDispatch } from "react-redux";
 import { useLazyFetchUserQuery, userApi } from "../../redux/api/userApi";
 import ForgotPasswordModal from "../../components/modals/ForgotPasswordModal";
+import { useTheme } from "react-native-paper";
 
 const UserAccess = () => {
   const { mode } = useLocalSearchParams();
@@ -29,7 +30,7 @@ const UserAccess = () => {
 
   const [lazyFetchUser] = useLazyFetchUserQuery();
 
-  const { colors } = tailwindConfig.theme.extend;
+  const theme = useTheme();
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
 
@@ -65,7 +66,7 @@ const UserAccess = () => {
     try {
       await createUserWithEmailAndPassword(auth, emailValue, passwordValue);
 
-      router.replace("verify-email");
+      router.push("verify-email");
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         setEmailError("Email is already in use");
@@ -78,8 +79,8 @@ const UserAccess = () => {
       } else {
         setGeneralError("An error occurred");
       }
-
-      return setIsLoading(false);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -94,11 +95,12 @@ const UserAccess = () => {
       const { user } = await signInWithEmailAndPassword(auth, emailValue, passwordValue);
       dispatch(userApi.util.invalidateTags(["user"]));
 
-      if (!user.emailVerified) router.replace("verify-email");
+      if (!user.emailVerified) router.push("verify-email");
 
       await lazyFetchUser()
         .unwrap()
         .then((user) => {
+          console.log(user);
           if (!user.username) {
             return router.replace("select-username");
           } else {
@@ -123,29 +125,35 @@ const UserAccess = () => {
       } else {
         setGeneralError("Server error");
       }
+    } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-primary" edges={["top", "left", "right", "bottom"]}>
+    <SafeAreaView
+      className="flex-1"
+      edges={["top", "left", "right", "bottom"]}
+      style={{
+        backgroundColor: theme.colors.primary,
+      }}
+    >
       <KeyboardAvoidingView className="flex-1 justify-center mb-[15]" behavior="padding">
         <View className="mx-[20]">
           <Text
-            className="text-mainText"
             style={{
-              fontSize: 23,
-              fontFamily: "pd-bold",
+              ...theme.fonts.header,
+              color: theme.colors.onPrimary,
               textAlign: "center",
             }}
           >
             Welcome{mode == "login" ? " back" : ""}!
           </Text>
           <Text
-            className="text-secondaryText mt-[17]"
+            className="mt-[17]"
             style={{
-              fontSize: 15,
-              fontFamily: "p-medium",
+              ...theme.fonts.textMedium,
+              color: theme.colors.onPrimaryLighter,
               textAlign: "center",
             }}
           >
@@ -155,19 +163,20 @@ const UserAccess = () => {
 
         <View className="mx-[25] mt-[30]">
           <Text
-            className="text-mainRed text-center mb-[7]"
+            className="text-center mb-[7]"
             style={{
-              fontSize: 13,
-              fontFamily: "p-medium",
+              ...theme.fonts.textSmall,
+              color: theme.colors.onError,
             }}
           >
             {generalError}
           </Text>
           <TextInput
-            className="text-mainText px-[10] py-[20] bg-secondary rounded-[10px]"
+            className="px-[10] py-[20] rounded-[10px]"
             style={{
-              fontSize: 15,
-              fontFamily: "p-medium",
+              ...theme.fonts.textInput,
+              backgroundColor: theme.colors.primaryContainer,
+              color: theme.colors.onPrimaryContainer,
             }}
             keyboardAppearance="dark"
             ref={emailRef}
@@ -178,25 +187,26 @@ const UserAccess = () => {
               setGeneralError("");
             }}
             placeholder="Email"
-            placeholderTextColor={colors.mainText}
+            placeholderTextColor={theme.colors.onPrimaryContainer}
             onSubmitEditing={() => {
               passwordRef.current?.focus();
             }}
           />
           <Text
-            className="text-mainRed px-[10]"
+            className="px-[10]"
             style={{
-              fontSize: 13,
-              fontFamily: "p-medium",
+              ...theme.fonts.textSmall,
+              color: theme.colors.onError,
             }}
           >
             {emailError}
           </Text>
           <TextInput
-            className="text-mainText px-[10] py-[20] bg-secondary rounded-[10px] mt-[10]"
+            className=" px-[10] py-[20] rounded-[10px] mt-[10]"
             style={{
-              fontSize: 15,
-              fontFamily: "p-medium",
+              ...theme.fonts.textInput,
+              backgroundColor: theme.colors.primaryContainer,
+              color: theme.colors.onPrimaryContainer,
             }}
             keyboardAppearance="dark"
             ref={passwordRef}
@@ -207,17 +217,17 @@ const UserAccess = () => {
               setGeneralError("");
             }}
             placeholder="Password"
-            placeholderTextColor={colors.mainText}
+            placeholderTextColor={theme.colors.onPrimaryContainer}
           />
           <View className="flex-row justify-between px-[10]">
             <Text
-              className="text-mainRed flex-1"
+              className="flex-1"
               style={{
-                fontSize: 13,
-                fontFamily: "p-medium",
+                ...theme.fonts.textSmall,
+                color: theme.colors.onError,
               }}
             >
-              {passwordError || "\n"}
+              {passwordError}
             </Text>
             {mode == "login" && (
               <Pressable
@@ -228,10 +238,9 @@ const UserAccess = () => {
                 }}
               >
                 <Text
-                  className="text-secondaryText"
                   style={{
-                    fontSize: 13,
-                    fontFamily: "p-medium",
+                    ...theme.fonts.textSmallBold,
+                    color: theme.colors.onPrimaryLighter,
                   }}
                 >
                   Forgot password
@@ -247,10 +256,10 @@ const UserAccess = () => {
             disabled={isLoading}
           >
             <Text
-              className="text-mainText pr-[2]"
+              className="pr-[2]"
               style={{
-                fontSize: 15,
-                fontFamily: "p-semibold",
+                ...theme.fonts.textMediumBold,
+                color: theme.colors.onPrimary,
                 textAlign: "center",
               }}
             >
@@ -258,7 +267,7 @@ const UserAccess = () => {
             </Text>
             {!isLoading && (
               <View className="mt-[3]">
-                <ArrowRight colour={colors.mainText} height={19} />
+                <ArrowRight colour={theme.colors.onPrimary} height={19} />
               </View>
             )}
           </Pressable>
@@ -276,19 +285,18 @@ const UserAccess = () => {
             <Text
               className="text-center"
               style={{
-                color: colors.mainRed,
-                fontSize: 15,
-                fontFamily: "p-bold",
+                color: theme.colors.accent,
+                ...theme.fonts.textMediumBold,
                 lineHeight: 20,
               }}
             >
               {mode == "login" ? "Sign Up" : "Login"}
             </Text>
             <Text
-              className="text-mainText text-center ml-[6]"
+              className="text-center ml-[6]"
               style={{
-                fontSize: 15,
-                fontFamily: "p-semibold",
+                ...theme.fonts.textMediumBold,
+                color: theme.colors.onPrimaryLighter,
                 lineHeight: 20,
                 textAlign: "center",
               }}
@@ -303,7 +311,7 @@ const UserAccess = () => {
         style={{ marginTop: insets.top + 7 }}
         onPress={router.back}
       >
-        <Close colour={colors.mainText} height={27} />
+        <Close colour={theme.colors.onPrimary} height={27} />
       </Pressable>
       <ForgotPasswordModal ref={forgotPasswordModalRef} />
     </SafeAreaView>

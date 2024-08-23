@@ -2,18 +2,18 @@ import { View, Text, StatusBar } from "react-native";
 import React, { useContext } from "react";
 import { useEffect } from "react";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import { HomeFeedContext } from "./contexts";
+import { HomeFeedContext } from "../utils/contexts";
 import Animated, { useAnimatedStyle, useSharedValue, withClamp, withTiming } from "react-native-reanimated";
 import tailwindConfig from "../tailwind.config";
+import { useTheme } from "react-native-paper";
 
 const Header = ({ route, navigation, ...rest }) => {
   const insets = useSafeAreaInsets();
-  const { colors } = tailwindConfig.theme.extend;
+  const theme = useTheme();
 
   const headerTitles = {
     index: "Home",
-    grid: "Grid",
-    create: "Create",
+    profile: "Profile",
     chat: "Chat",
     inbox: "Inbox",
   };
@@ -24,13 +24,17 @@ const Header = ({ route, navigation, ...rest }) => {
     <SafeAreaView
       edges={["left", "right"]}
       style={{
-        backgroundColor: colors.primary,
+        backgroundColor: theme.colors.primary,
       }}
     >
       <View className="flex-row justify-center pb-2" style={{ paddingTop: insets.top }}>
         <View>
           <Text
-            className="text-center font-bold text-xl text-mainText"
+            className="text-center"
+            style={{
+              ...theme.fonts.header,
+              color: theme.colors.onPrimary,
+            }}
           >
             {title}
           </Text>
