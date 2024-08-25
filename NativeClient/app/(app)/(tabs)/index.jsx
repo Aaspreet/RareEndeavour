@@ -3,15 +3,15 @@ import React, { lazy, memo, useContext, useEffect, useRef, useState } from "reac
 import { Link, Redirect, router, useLocalSearchParams, useRootNavigationState } from "expo-router";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import { useDispatch, useSelector } from "react-redux";
-import { auth } from "../../config/firebaseConfig";
+import { auth } from "../../../config/firebaseConfig";
 import { FontAwesome, Ionicons, MaterialCommunityIcons, Octicons } from "react-native-vector-icons";
-import tailwindConfig from "../../tailwind.config";
-import { ScrollingDownContext } from "../../utils/contexts";
-import PostFeed from "../../components/feeds/PostFeed";
-import axios from "../../config/axiosConfig";
-import { Retry } from "../../assets/icons";
-import updateScrollingDown from "../../utils/functions/updateScrollingDown";
-import { PostFeedListFooter } from "../../components/other/PostFeedList";
+import tailwindConfig from "../../../tailwind.config";
+import { ScrollingDownContext } from "../../../utils/contexts";
+import PostFeed from "../../../components/feeds/PostFeed";
+import axios from "../../../config/axiosConfig";
+import { Retry } from "../../../assets/icons";
+import updateScrollingDown from "../../../utils/functions/updateScrollingDown";
+import { PostFeedListFooter } from "../../../components/other/PostFeedList";
 import { useTheme } from "react-native-paper";
 
 const Home = () => {
@@ -25,6 +25,7 @@ const Home = () => {
 
   const insets = useSafeAreaInsets();
   const theme = useTheme();
+  
 
   const fetchPosts = () => {
     if (isFetching) return;

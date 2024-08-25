@@ -38,7 +38,7 @@ export default theme = {
   colors: {
     primary: "rgb(31, 28, 31)",
     onPrimary: "rgb(233, 233, 233)",
-    onPrimaryDisabled: "rgb(202, 202, 202)",
+    onPrimaryDisabled: "rgb(148, 148, 148)",
     onPrimaryLighter: "rgb(202, 202, 202)",
     primaryContainer: "rgb(23, 19, 23)",
     onPrimaryContainer: "rgb(233, 233, 233)",

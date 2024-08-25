@@ -1,7 +1,7 @@
 import { View, Text, Pressable, StyleSheet, Button, TextInput } from "react-native";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { auth } from "../../config/firebaseConfig";
+import { auth } from "../../../config/firebaseConfig";
 import { router, useLocalSearchParams } from "expo-router";
 import BottomSheet, { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
 import { GestureHandlerRootView } from "react-native-gesture-handler";

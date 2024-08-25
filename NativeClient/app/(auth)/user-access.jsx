@@ -28,7 +28,7 @@ const UserAccess = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const [lazyFetchUser] = useLazyFetchUserQuery();
+  const [lazyFetchUser, { data: userData }] = useLazyFetchUserQuery();
 
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -93,23 +93,11 @@ const UserAccess = () => {
     }
     try {
       const { user } = await signInWithEmailAndPassword(auth, emailValue, passwordValue);
-      dispatch(userApi.util.invalidateTags(["user"]));
+      const result = await user.getIdTokenResult();
 
-      if (!user.emailVerified) router.push("verify-email");
-
-      await lazyFetchUser()
-        .unwrap()
-        .then((user) => {
-          console.log(user);
-          if (!user.username) {
-            return router.replace("select-username");
-          } else {
-            return router.replace("/");
-          }
-        })
-        .catch((error) => {
-          return router.replace("select-username");
-        });
+      if (!result.claims.email_verified) router.push("verify-email");
+      if (!result.claims.hasUsername) router.push("select-username");
+      router.push("/");
     } catch (error) {
       console.log(error);
       if (error.code === "auth/invalid-email") {
@@ -202,7 +190,7 @@ const UserAccess = () => {
             {emailError}
           </Text>
           <TextInput
-            className=" px-[10] py-[20] rounded-[10px] mt-[10]"
+            className="px-[10] py-[20] rounded-[10px] mt-[10]"
             style={{
               ...theme.fonts.textInput,
               backgroundColor: theme.colors.primaryContainer,

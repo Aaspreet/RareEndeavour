@@ -13,7 +13,6 @@ import Loading from "./loading";
 import { useFonts } from "expo-font";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { BottomSheetModal, BottomSheetModalProvider, BottomSheetView } from "@gorhom/bottom-sheet";
-import tailwindConfig from "../tailwind.config";
 import AuthPromptModal from "../components/modals/AuthPromptModal";
 import { AuthPromptModalContext, ScrollingDownContext } from "../utils/contexts.js";
 import { PaperProvider } from "react-native-paper";
@@ -66,10 +65,8 @@ const Layout = () => {
                 <AuthPromptModalContext.Provider value={{ authPromptModalRef }}>
                   <ScrollingDownContext.Provider value={{ scrollingDown, setScrollingDown }}>
                     <Stack screenOptions={{ headerShown: false }}>
-                      <Stack.Screen name="(tabs)" />
+                      <Stack.Screen name="(app)" options={{}} />
                       <Stack.Screen name="(auth)" options={{ animation: "slide_from_bottom" }} />
-                      <Stack.Screen name="(pages)" />
-                      <Stack.Screen name="(test)" options={{}} />
                     </Stack>
                   </ScrollingDownContext.Provider>
                 </AuthPromptModalContext.Provider>

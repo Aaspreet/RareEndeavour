@@ -1,5 +1,5 @@
 import { View, Text, KeyboardAvoidingView, Pressable } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import tailwindConfig from "../../tailwind.config";
 import { ArrowRight, Close } from "../../assets/icons";
@@ -9,6 +9,9 @@ import { usernameValidationRules } from "../../assets/other/authenticationRules"
 import { auth } from "../../config/firebaseConfig";
 import axios from "../../config/axiosConfig";
 import { useTheme } from "react-native-paper";
+import { userApi } from "../../redux/api/userApi";
+import { useDispatch } from "react-redux";
+import { IsAuthenticatedContext } from "../../utils/contexts";
 
 const SelectUsername = () => {
   const [usernameValue, setUsernameValue] = useState("");
@@ -16,6 +19,9 @@ const SelectUsername = () => {
 
   const [usernameError, setUsernameError] = useState("");
 
+  const { isAuthenticated, checkAuthentication } = useContext(IsAuthenticatedContext);
+
+  const dispatch = useDispatch();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
@@ -43,13 +49,13 @@ const SelectUsername = () => {
   };
 
   useEffect(() => {
-    if (auth.currentUser) {
-      if (!auth.currentUser?.emailVerified) {
-        router.replace("verify-email");
-      }
-    } else {
-      router.replace("user-access");
-    }
+    const checkAuthenticationStage = async () => {
+      const user = await auth.currentUser?.getIdTokenResult(true);
+      if (!user) router.push({ pathname: "user-access", params: { mode: "login" } });
+      if (!user.claims.email_verified) router.push("verify-email");
+      if (user.claims.hasUsername) router.push("/");
+    };
+    checkAuthenticationStage();
   }, []);
 
   return (

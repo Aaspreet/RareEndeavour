@@ -9,16 +9,27 @@ export const fetchComments = async (req, res, next) => {
     if (!postId) return next(errorHandler(400, "Missing required fields"));
 
     const [rootComments] = await pool.execute(
-      "SELECT * FROM comments WHERE post_id = ? AND parent_comment_id IS NULL ORDER BY timestamp LIMIT ?",
+      `SELECT u.username, c.id, c.user_id, c.post_id, c.parent_comment_id, c.content, c.timestamp FROM comments c
+      JOIN users u ON c.user_id = u.uid       
+
+      WHERE c.post_id = ? AND c.parent_comment_id IS NULL 
+      ORDER BY c.timestamp LIMIT ?`,
+
       [postId, limit]
     );
 
     const getReplies = async (comment) => {
-      const [replies] = await pool.execute("SELECT * FROM comments WHERE parent_comment_id = ?", [comment.id]);
+      const [replies] = await pool.execute(
+        `SELECT u.username, c.id, c.user_id, c.post_id, c.parent_comment_id, c.content, c.timestamp FROM comments c
+      JOIN users u ON c.user_id = u.uid
+
+      WHERE c.parent_comment_id = ? 
+      ORDER BY c.timestamp`,
+
+        [comment.id]
+      );
 
       for (const reply of replies) {
-        const [[username]] = await pool.execute("SELECT username FROM users WHERE uid = ?", [reply.user_id]);
-        reply.username = username.username;
         reply.replies = await getReplies(reply);
       }
 
@@ -27,16 +38,12 @@ export const fetchComments = async (req, res, next) => {
 
     const comments = await Promise.all(
       rootComments.map(async (comment) => {
-        const [[username]] = await pool.execute("SELECT username FROM users WHERE uid = ?", [comment.user_id]);
-        const replies = await getReplies(comment);
-
-        console.log(username);
-        return { ...comment, ...username, replies };
+        comment.replies = await getReplies(comment);
+        return comment;
       })
     );
 
     console.log(comments);
-
     return res.status(200).json(comments);
   } catch (error) {
     return next(errorHandler(500, error.message || "Internal Server Error While Fetching Comments"));

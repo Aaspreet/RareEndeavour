@@ -5,8 +5,7 @@ import { useTheme, TextInput } from "react-native-paper";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
 import axios from "../../config/axiosConfig";
 import { useLocalSearchParams } from "expo-router";
-import confirmUserAuthenticated from "../../utils/functions/confirmUserAuthenticated";
-import { AuthPromptModalContext } from "../../utils/contexts";
+import { AuthPromptModalContext, IsAuthenticatedContext } from "../../utils/contexts";
 
 const AddComment = forwardRef(({ postId, replyingTo, setReplyingTo }, inputRef) => {
   const [keyboardVisible, setKeyboardVisible] = useState(false);
@@ -18,14 +17,16 @@ const AddComment = forwardRef(({ postId, replyingTo, setReplyingTo }, inputRef) 
 
   const [replyDisabled, setReplyDisabled] = useState(true);
 
-  const [userAuthenticated, setUserAuthenticated] = useState(false);
   const { authPromptModalRef } = useContext(AuthPromptModalContext);
+
+  const { isAuthenticated, checkAuthentication } = useContext(IsAuthenticatedContext);
 
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
   const handleSubmit = async () => {
     setError(null);
+
     if (isLoading) return;
     setIsLoading(true);
 
@@ -34,16 +35,17 @@ const AddComment = forwardRef(({ postId, replyingTo, setReplyingTo }, inputRef) 
       return setError("Comment must be at least 1 characters long");
     }
 
-    console.log(inputValue);
     await axios
       .post("/comments/create", { postId, parentCommentId: replyingTo?.id, content: inputValue })
       .then((res) => {
         setInputValue("");
-        setIsLoading(false);
+        Keyboard.dismiss();
       })
       .catch((err) => {
         console.log(err);
         setError("Error creating comment");
+      })
+      .finally(() => {
         setIsLoading(false);
       });
   };
@@ -77,7 +79,7 @@ const AddComment = forwardRef(({ postId, replyingTo, setReplyingTo }, inputRef) 
           borderBottomRightRadius: 8,
         }}
       >
-        <Pressable className="px-[8] py-[4]" disabled={replyDisabled || isLoading} onPress={handleSubmit}>
+        <Pressable className="px-[8] py-[4] mr-[8]" disabled={replyDisabled || isLoading} onPress={handleSubmit}>
           <Text
             style={{
               ...theme.fonts.textSmallBold,
@@ -131,18 +133,15 @@ const AddComment = forwardRef(({ postId, replyingTo, setReplyingTo }, inputRef) 
         <TextInput
           ref={inputRef}
           placeholder="Comment..."
+          value={inputValue}
           multiline={true}
           dense={true}
           selectionColor="white"
           placeholderTextColor={theme.colors.onPrimaryLighter}
           onPress={async () => {
-            if (!userAuthenticated) {
-              await confirmUserAuthenticated(authPromptModalRef).then((res) => {
-                if (res) setUserAuthenticated(true);
-              });
-            }
+            if (!isAuthenticated) await checkAuthentication(true);
           }}
-          readOnly={!userAuthenticated}
+          readOnly={!isAuthenticated}
           onFocus={(e) => {
             inputRef.current.setNativeProps({ selection: { start: inputValue.length, end: inputValue.length } });
           }}

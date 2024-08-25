@@ -3,13 +3,13 @@ import { View, PanResponder, Text, Pressable } from "react-native";
 import { FlatList, Gesture, GestureDetector, ScrollView } from "react-native-gesture-handler";
 import Animated, { useSharedValue, withTiming } from "react-native-reanimated";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import PostFeed from "../../components/feeds/PostFeed";
-import tailwindConfig from "../../tailwind.config";
+import PostFeed from "../../../components/feeds/PostFeed";
+import tailwindConfig from "../../../tailwind.config";
 import { usePathname } from "expo-router";
-import axios from "../../config/axiosConfig";
-import { ScrollingDownContext } from "../../utils/contexts";
-import updateScrollingDown from "../../utils/functions/updateScrollingDown";
-import { PostFeedListFooter } from "../../components/other/PostFeedList";
+import axios from "../../../config/axiosConfig";
+import { ScrollingDownContext } from "../../../utils/contexts";
+import updateScrollingDown from "../../../utils/functions/updateScrollingDown";
+import { PostFeedListFooter } from "../../../components/other/PostFeedList";
 import { useTheme } from "react-native-paper";
 
 const DraggableHeightView = () => {

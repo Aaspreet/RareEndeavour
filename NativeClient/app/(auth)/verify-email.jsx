@@ -61,37 +61,29 @@ const VerifyEmail = () => {
   };
 
   useEffect(() => {
-    const asyncUseEffect = async () => {
-      if (auth.currentUser) {
-        if (auth.currentUser?.emailVerified) {
-          await lazyFetchUser()
-            .unwrap()
-            .then((user) => {
-              if (!user.username) {
-                // return router.replace("select-username");
-              } else {
-                return router.replace("/");
-              }
-            })
-            .catch((error) => {
-              return router.replace("select-username");
-            });
-          return;
-        }
-
-        setInitialVerificationEmailState("sending");
-
-        try {
-          await sendEmailVerification(auth.currentUser);
-          setInitialVerificationEmailState("sent");
-        } catch (error) {
-          console.log(error);
-
-          setInitialVerificationEmailState("failed");
-        }
-      } else {
-        router.replace("user-access");
+    const checkAuthenticationStage = async () => {
+      const user = await auth.currentUser?.getIdTokenResult(true);
+      if (!user) router.push({ pathname: "user-access", params: { mode: "login" } });
+      if (user.claims.email_verified) {
+        if (!user.claims.hasUsername) router.push("select-username");
+        if (user.claims.hasUsername) router.push("/");
       }
+    };
+
+    const sendInitialVerificationEmail = async () => {
+      setInitialVerificationEmailState("sending");
+      try {
+        await sendEmailVerification(auth.currentUser);
+        setInitialVerificationEmailState("sent");
+      } catch (error) {
+        console.log(error);
+        setInitialVerificationEmailState("failed");
+      }
+    };
+
+    const asyncUseEffect = async () => {
+      await checkAuthenticationStage();
+      sendInitialVerificationEmail();
     };
     asyncUseEffect();
   }, []);

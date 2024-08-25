@@ -6,8 +6,10 @@ export const userApi = createApi({
   baseQuery: fetchBaseQuery({
     baseUrl: `${process.env.EXPO_PUBLIC_API_URL}/api/user`,
     prepareHeaders: async (headers) => {
-      const token = await auth.currentUser.getIdToken();
+      // console.log(auth.currentUser);
+      const token = await auth.currentUser?.getIdToken();
       if (token) headers.set("Authorization", `Bearer ${token}`);
+      // console.log(token)
       // headers.set("Cache-Control", "no-cache");
     },
   }),

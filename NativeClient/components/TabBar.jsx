@@ -20,9 +20,9 @@ import {
   ProfileFill,
   ProfileOutline,
 } from "../assets/icons";
-import { AuthPromptModalContext, ScrollingDownContext } from "../utils/contexts";
+import { AuthPromptModalContext, IsAuthenticatedContext, ScrollingDownContext } from "../utils/contexts";
 import { useTheme } from "react-native-paper";
-import confirmUserAuthenticated from "../utils/functions/confirmUserAuthenticated";
+import { useFetchUserQuery } from "../redux/api/userApi";
 
 const TabBar = ({ state, ...rest }) => {
   const blurViewIntensity = useSharedValue(0);
@@ -41,6 +41,7 @@ const TabBar = ({ state, ...rest }) => {
   const allowAnimatedTabBar = routesWithAnimatedTabBar.includes(state.routes[state.index].name);
 
   const { authPromptModalRef } = useContext(AuthPromptModalContext);
+  const { isAuthenticated, checkAuthentication } = useContext(IsAuthenticatedContext);
 
   const { scrollingDown } = useContext(ScrollingDownContext);
   const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
@@ -102,11 +103,11 @@ const TabBar = ({ state, ...rest }) => {
           <Pressable
             key={route.name}
             onPress={async () => {
-              // if (!auth.currentUser && routesRequiringAuth.includes(route.name))
-              //   return authPromptModalRef.current?.present();
+              if (!auth.currentUser && routesRequiringAuth.includes(route.name))
+                return authPromptModalRef.current?.present();
               if (routesRequiringAuth.includes(route.name)) {
-                const allowRedirection = await confirmUserAuthenticated(authPromptModalRef);
-                if (!allowRedirection) return;
+                const response = await checkAuthentication(true);
+                if (!response) return;
               }
 
               route.name === "index" ? router.push("") : router.push(route.name);

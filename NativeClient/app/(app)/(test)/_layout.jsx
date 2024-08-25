@@ -5,7 +5,7 @@ import { Slot, Stack } from "expo-router";
 const Layout = () => {
   return (
     <Stack>
-      <Stack.Screen name="test"/>
+      <Stack.Screen name="test" options={{ presentation: "card" }} />
     </Stack>
   );
 };

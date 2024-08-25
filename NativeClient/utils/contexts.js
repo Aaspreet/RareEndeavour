@@ -5,3 +5,5 @@ export const ScrollingDownContext = createContext({
 });
 
 export const AuthPromptModalContext = createContext(null);
+
+export const IsAuthenticatedContext = createContext(false);

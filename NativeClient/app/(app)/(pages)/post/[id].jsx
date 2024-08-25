@@ -1,13 +1,13 @@
 import { View, Text, Pressable, FlatList, KeyboardAvoidingView, Keyboard } from "react-native";
 import React, { forwardRef, useEffect, useRef, useState } from "react";
-import { Bookmark, CloseX, Dotdotdot, Reply, Share, Triangle } from "../../../assets/icons";
+import { Bookmark, CloseX, Dotdotdot, Reply, Share, Triangle } from "../../../../assets/icons";
 import { useTheme, TextInput } from "react-native-paper";
 import { SafeAreaView, useSafeAreaInsets } from "react-native-safe-area-context";
-import axios from "../../../config/axiosConfig";
+import axios from "../../../../config/axiosConfig";
 import { useLocalSearchParams } from "expo-router";
-import AddComment from "../../../components/post/AddComment";
-import PostDisplay from "../../../components/post/PostDisplay";
-import CommentsDisplay from "../../../components/post/CommentsDisplay";
+import AddComment from "../../../../components/post/AddComment";
+import PostDisplay from "../../../../components/post/PostDisplay";
+import CommentsDisplay from "../../../../components/post/CommentsDisplay";
 
 const Post = () => {
   const { id } = useLocalSearchParams();
